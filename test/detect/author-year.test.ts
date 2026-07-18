@@ -55,6 +55,21 @@ describe("author-year detection", () => {
         expect(findAuthorYearMatches("see (2021) here")).toHaveLength(0);
     });
 
+    it("does not treat grant/award identifiers as citations (regression)", () => {
+        // From a real acknowledgments section: alphanumeric IDs embed
+        // year-like digit runs and must not become markers.
+        const m = findAuthorYearMatches(
+            "supported by Grants (JCYJ20220818103001002), (C10120230151) and (RCBS20221008093330065)."
+        );
+        expect(m).toHaveLength(0);
+        // ...while a real cite in the same sentence still matches.
+        const mixed = findAuthorYearMatches(
+            "funded under JCYJ20220818103001002 (Smith, 2021)."
+        );
+        expect(mixed).toHaveLength(1);
+        expect(mixed[0]!.authorKey).toBe("smith");
+    });
+
     it("keeps distinct year suffixes visible in rawText", () => {
         const m = findAuthorYearMatches("(Brown, 2020a) and (Brown, 2020b)");
         expect(m).toHaveLength(2);

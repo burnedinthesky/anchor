@@ -11,7 +11,7 @@ export function extractDoi(text: string): string | undefined {
 }
 
 export function extractYear(text: string): number | undefined {
-    const m = text.match(/(?:18|19|20)\d{2}/);
+    const m = text.match(/(?<![A-Za-z0-9])(?:18|19|20)\d{2}(?![0-9])/);
     return m ? Number(m[0]) : undefined;
 }
 

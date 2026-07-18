@@ -8,8 +8,11 @@
 import { firstSurname, normalizeSurname } from "./authorKey";
 import type { RawMatch } from "./numeric";
 
-const YEAR = /(?:18|19|20)\d{2}/;
-const YEAR_G = /(18|19|20)\d{2}/;
+// Standalone-token guard: `\b` is not enough because letter->digit is a word
+// boundary, so grant/award identifiers like "JCYJ20220818103001002" would
+// otherwise yield a "year". A year must not be glued to a letter or digit.
+const YEAR = /(?<![A-Za-z0-9])(?:18|19|20)\d{2}(?![0-9])/;
+const YEAR_G = /(?<![A-Za-z0-9])((?:18|19|20)\d{2})(?![0-9])/;
 
 function parseCite(text: string): { authorKey: string; year: number } | null {
     const ym = text.match(YEAR_G);

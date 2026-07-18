@@ -12,17 +12,32 @@ import type {
 } from "../types";
 import { assembleLines, type Line } from "../detect/text";
 import { findReferencesSection } from "../detect/section";
-import { firstSurname, normalizeSurname } from "../detect/authorKey";
+import { normalizeSurname } from "../detect/authorKey";
 import { extractDoi, extractTitle, extractAuthors, extractYear } from "./hints";
 
 const NUMBERED_START = /^\s*(?:\[(\d+)\]|(\d+)[.)])\s+/;
 const YEAR_SUFFIX = /(?:18|19|20)\d{2}([a-z])\b/;
 
+/** Connectives/particles that appear between author names but are not surnames. */
+const AUTHOR_STOPWORDS = new Set(["and", "et", "al", "eds", "ed", "in", "the"]);
+
 interface AuthorYearEntry {
     text: string;
-    surname: string;
+    surnames: string[];
     year: number;
     suffix: string | null;
+}
+
+/** Cluster sorted values whose neighbors are within `gap`; return each cluster's minimum. */
+function clusterMins(values: number[], gap: number): number[] {
+    const sorted = [...values].sort((a, b) => a - b);
+    const mins: number[] = [];
+    let prev: number | null = null;
+    for (const v of sorted) {
+        if (prev === null || v - prev > gap) mins.push(v);
+        prev = v;
+    }
+    return mins;
 }
 
 export class BibliographyResolver implements ReferenceResolver {
@@ -81,6 +96,19 @@ export class BibliographyResolver implements ReferenceResolver {
             }
         }
         if (entries.length < 2) return false;
+        // Sanity: genuine numbered bibliographies start at 1 and are dense.
+        // Without this, author-year entries whose wrapped lines start with a
+        // year ("2016. A sequence-to-sequence model...") masquerade as a
+        // sparse numbered list with ordinals like 2016 and swallow the block.
+        const ords = entries.map((e) => e.ordinal);
+        const maxOrd = Math.max(...ords);
+        if (
+            Math.min(...ords) !== 1 ||
+            maxOrd > 999 ||
+            entries.length < maxOrd / 2
+        ) {
+            return false;
+        }
 
         for (const e of entries) {
             this.numberedMap.set(e.ordinal, e.text.trim());
@@ -92,14 +120,46 @@ export class BibliographyResolver implements ReferenceResolver {
     /** Split unnumbered refs on hanging-indent boundaries and index by author/year. */
     private segmentAuthorYear(lines: Line[]): void {
         if (lines.length === 0) return;
-        const flushX = Math.min(...lines.map((l) => l.x));
-        const med = 10; // reference tolerance in PDF units
-        const tol = med * 0.6;
+        // Entry starts sit on a column's flush-left margin; continuations are
+        // hanging-indented ~8-15 units right of it. Multi-column layouts have
+        // one such margin pair per column, and trailing appendix content can
+        // occupy arbitrary x positions, so margins cannot be found by
+        // clustering or by taking minima. Instead: a margin is an x position
+        // shared by MANY lines (flush margins and hanging indents both are),
+        // minus those that lie a hanging-indent's distance right of another
+        // frequent x (those are the continuation indents).
+        const tol = 3;
+        const counts = new Map<number, number>();
+        for (const l of lines) {
+            const r = Math.round(l.x);
+            counts.set(r, (counts.get(r) ?? 0) + 1);
+        }
+        // Flush margins and hanging indents dominate the histogram (hundreds
+        // of lines each); tables/appendix content contributes low-count noise
+        // that must not qualify, or a noise x just left of a real margin
+        // makes the margin itself look like a hanging indent below.
+        const maxCount = Math.max(...counts.values());
+        const threshold = Math.max(3, maxCount * 0.1);
+        const frequent = [...counts.entries()]
+            .filter(([, n]) => n >= threshold)
+            .map(([x]) => x)
+            .sort((a, b) => a - b);
+        let margins = frequent.filter(
+            (x) => !frequent.some((other) => x - other >= 4 && x - other <= 20)
+        );
+        if (margins.length === 0) {
+            // Tiny bibliographies (fixtures, short docs): fall back to the
+            // per-cluster minimum of all x positions.
+            margins = clusterMins(
+                lines.map((l) => Math.round(l.x)),
+                40
+            );
+        }
 
         const blocks: string[] = [];
         let cur: string | null = null;
         for (const line of lines) {
-            const isStart = line.x <= flushX + tol;
+            const isStart = margins.some((m) => Math.abs(line.x - m) <= tol);
             if (isStart || cur === null) {
                 cur = line.text.trim();
                 blocks.push(cur);
@@ -112,25 +172,52 @@ export class BibliographyResolver implements ReferenceResolver {
         for (const text of blocks) {
             const entry = this.parseAuthorYearEntry(text);
             if (!entry) continue;
-            const key = `${entry.surname}|${entry.year}`;
-            const arr = this.byKey.get(key);
-            if (arr) arr.push(text);
-            else this.byKey.set(key, [text]);
-            if (entry.suffix) this.bySuffix.set(`${key}${entry.suffix}`, text);
+            for (const surname of entry.surnames) {
+                const key = `${surname}|${entry.year}`;
+                const arr = this.byKey.get(key);
+                if (arr) arr.push(text);
+                else this.byKey.set(key, [text]);
+                if (
+                    entry.suffix &&
+                    !this.bySuffix.has(`${key}${entry.suffix}`)
+                ) {
+                    this.bySuffix.set(`${key}${entry.suffix}`, text);
+                }
+            }
         }
     }
 
+    /**
+     * Index an entry under EVERY surname-looking token that precedes its year.
+     * Bibliography styles disagree on name order ("Asri, L." vs "Layla El
+     * Asri"), so keying only the first token misses "First Last" styles; the
+     * in-text marker always cites a real surname, so indexing all candidate
+     * tokens keeps recall without hurting precision (year + suffix still gate
+     * the match).
+     */
     private parseAuthorYearEntry(text: string): AuthorYearEntry | null {
-        const sn = firstSurname(text);
-        const year = extractYear(text);
-        if (!sn || year === undefined) return null;
-        const sm = text.match(YEAR_SUFFIX);
-        return {
-            text,
-            surname: normalizeSurname(sn),
-            year,
-            suffix: sm ? (sm[1] ?? null) : null,
-        };
+        const ym = text.match(
+            /(?<![A-Za-z0-9])((?:18|19|20)\d{2})([a-z])?(?![0-9])/
+        );
+        if (!ym || ym.index === undefined) return null;
+        const year = Number(ym[1]);
+        const suffix = ym[2] ?? null;
+
+        const authorRegion = text.slice(0, ym.index);
+        const tokens = authorRegion.match(/[A-ZÀ-Þ][A-Za-zÀ-ÿ'’-]+/g) ?? [];
+        const surnames = [
+            ...new Set(
+                tokens
+                    .filter(
+                        (t) =>
+                            t.length >= 2 &&
+                            !AUTHOR_STOPWORDS.has(t.toLowerCase())
+                    )
+                    .map(normalizeSurname)
+            ),
+        ];
+        if (surnames.length === 0) return null;
+        return { text, surnames, year, suffix };
     }
 
     resolve(marker: CitationMarker): ResolvedReference | null {

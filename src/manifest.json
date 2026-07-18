@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Anchor PDF Reader",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "A Firefox PDF reader that shows interactive citation previews as you read.",
     "browser_specific_settings": {
         "gecko": {
