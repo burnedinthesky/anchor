@@ -18,8 +18,8 @@ export { createMetadataProvider } from "./chain";
 export type { MetadataProviderOptions } from "./chain";
 export { MetadataLookupError } from "./errors";
 export {
-  MemoryCacheStore,
-  BrowserStorageCacheStore,
-  createCacheStore,
+    MemoryCacheStore,
+    BrowserStorageCacheStore,
+    createCacheStore,
 } from "./cache";
 export type { CacheStore, CacheEntry } from "./cache";

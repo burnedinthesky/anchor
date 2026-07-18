@@ -1,0 +1,8 @@
+dist/
+vendor/
+artifacts/
+node_modules/
+coverage/
+package-lock.json
+test/fixtures/*.json
+test/fixtures/pdf/

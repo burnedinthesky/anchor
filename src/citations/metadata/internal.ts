@@ -21,15 +21,15 @@ export type RandomFn = () => number;
  * these (first-wins by source priority) into a `PaperRecord`.
  */
 export interface SourceResult {
-  title?: string;
-  authors?: string[];
-  year?: number;
-  venue?: string;
-  abstract?: string;
-  citationCount?: number;
-  related?: RelatedPaper[];
-  versions?: PaperVersion[];
-  oaPdfUrl?: string;
-  /** DOI discovered by this source (e.g. Crossref bibliographic search). */
-  doi?: string;
+    title?: string;
+    authors?: string[];
+    year?: number;
+    venue?: string;
+    abstract?: string;
+    citationCount?: number;
+    related?: RelatedPaper[];
+    versions?: PaperVersion[];
+    oaPdfUrl?: string;
+    /** DOI discovered by this source (e.g. Crossref bibliographic search). */
+    doi?: string;
 }

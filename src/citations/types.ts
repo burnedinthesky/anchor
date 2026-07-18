@@ -12,24 +12,24 @@
 
 /** One text item from pdf.js `page.getTextContent()`. */
 export interface TextItem {
-  str: string;
-  /** 6-element matrix [a, b, c, d, e, f]; e/f are x/y in PDF user space. */
-  transform: number[];
-  width: number;
-  height: number;
-  fontName: string;
-  dir: string;
-  hasEOL?: boolean;
+    str: string;
+    /** 6-element matrix [a, b, c, d, e, f]; e/f are x/y in PDF user space. */
+    transform: number[];
+    width: number;
+    height: number;
+    fontName: string;
+    dir: string;
+    hasEOL?: boolean;
 }
 
 export interface PDFTextContent {
-  items: TextItem[];
+    items: TextItem[];
 }
 
 /** Minimal viewport interface (pdf.js PageViewport is structurally compatible). */
 export interface ViewportLike {
-  scale: number;
-  convertToViewportPoint(x: number, y: number): [number, number];
+    scale: number;
+    convertToViewportPoint(x: number, y: number): [number, number];
 }
 
 /**
@@ -37,12 +37,12 @@ export interface ViewportLike {
  * Stage 1 detection and the Stage 4 overlay subscribe to this.
  */
 export interface PageTextReadyEvent {
-  /** 1-based page number. */
-  pageNumber: number;
-  textContent: PDFTextContent;
-  /** The rendered text-layer element the overlay should be mounted over. */
-  textLayerDiv: HTMLElement;
-  viewport: ViewportLike;
+    /** 1-based page number. */
+    pageNumber: number;
+    textContent: PDFTextContent;
+    /** The rendered text-layer element the overlay should be mounted over. */
+    textLayerDiv: HTMLElement;
+    viewport: ViewportLike;
 }
 
 // ---------------------------------------------------------------------------
@@ -52,51 +52,51 @@ export interface PageTextReadyEvent {
 export type CitationScheme = "numeric" | "superscript" | "author-year";
 
 export interface CitationMarker {
-  id: string; // stable per page+span
-  page: number;
-  scheme: CitationScheme;
-  rawText: string; // e.g. "[12]" or "(Smith et al., 2021)"
-  rect: { x: number; y: number; w: number; h: number }; // viewport coords
-  ordinal?: number; // numeric schemes (first ordinal for ranges/lists)
-  /** All ordinals covered by this marker, e.g. [3,4,5] for "[3-5]". */
-  ordinals?: number[];
-  authorKey?: string; // author-year, normalized surname
-  year?: number; // author-year
+    id: string; // stable per page+span
+    page: number;
+    scheme: CitationScheme;
+    rawText: string; // e.g. "[12]" or "(Smith et al., 2021)"
+    rect: { x: number; y: number; w: number; h: number }; // viewport coords
+    ordinal?: number; // numeric schemes (first ordinal for ranges/lists)
+    /** All ordinals covered by this marker, e.g. [3,4,5] for "[3-5]". */
+    ordinals?: number[];
+    authorKey?: string; // author-year, normalized surname
+    year?: number; // author-year
 }
 
 export interface ResolvedReference {
-  markerId: string;
-  rawText: string;
-  doi?: string;
-  hints: { title?: string; authors?: string[]; year?: number };
+    markerId: string;
+    rawText: string;
+    doi?: string;
+    hints: { title?: string; authors?: string[]; year?: number };
 }
 
 export interface RelatedPaper {
-  title: string;
-  year?: number;
-  scholarUrl: string;
+    title: string;
+    year?: number;
+    scholarUrl: string;
 }
 
 export interface PaperVersion {
-  label: string;
-  url?: string;
+    label: string;
+    url?: string;
 }
 
 export type MetadataSource = "openalex" | "crossref" | "semanticscholar";
 
 export interface PaperRecord {
-  title: string;
-  authors: string[];
-  year?: number;
-  venue?: string;
-  abstract?: string;
-  citationCount?: number;
-  related: RelatedPaper[];
-  versions: PaperVersion[];
-  oaPdfUrl?: string;
-  scholarUrl: string;
-  sources: MetadataSource[];
-  completeness: "full" | "partial" | "empty";
+    title: string;
+    authors: string[];
+    year?: number;
+    venue?: string;
+    abstract?: string;
+    citationCount?: number;
+    related: RelatedPaper[];
+    versions: PaperVersion[];
+    oaPdfUrl?: string;
+    scholarUrl: string;
+    sources: MetadataSource[];
+    completeness: "full" | "partial" | "empty";
 }
 
 // ---------------------------------------------------------------------------
@@ -104,19 +104,19 @@ export interface PaperRecord {
 // ---------------------------------------------------------------------------
 
 export interface CitationDetector {
-  detect(
-    page: number,
-    text: PDFTextContent,
-    viewport: ViewportLike
-  ): CitationMarker[];
+    detect(
+        page: number,
+        text: PDFTextContent,
+        viewport: ViewportLike
+    ): CitationMarker[];
 }
 
 export interface ReferenceResolver {
-  resolve(marker: CitationMarker): ResolvedReference | null;
+    resolve(marker: CitationMarker): ResolvedReference | null;
 }
 
 export interface MetadataProvider {
-  lookup(ref: ResolvedReference): Promise<PaperRecord>;
+    lookup(ref: ResolvedReference): Promise<PaperRecord>;
 }
 
 // ---------------------------------------------------------------------------
@@ -133,5 +133,5 @@ export const CARD_WIDTH_PX = 360;
 export const DEFAULT_MAILTO = "andrew.kuo@datalab.to";
 
 export function buildScholarUrl(query: string): string {
-  return `https://scholar.google.com/scholar?q=${encodeURIComponent(query)}`;
+    return `https://scholar.google.com/scholar?q=${encodeURIComponent(query)}`;
 }

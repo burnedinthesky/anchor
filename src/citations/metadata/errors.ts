@@ -9,16 +9,19 @@
  * which resolves successfully with completeness === "empty").
  */
 export class MetadataLookupError extends Error {
-  readonly status?: number;
+    readonly status?: number;
 
-  constructor(message: string, options?: { cause?: unknown; status?: number }) {
-    super(message);
-    this.name = "MetadataLookupError";
-    this.status = options?.status;
-    if (options?.cause !== undefined) {
-      // Preserve the underlying error without relying on the ES2022 cause arg
-      // being surfaced by every runtime.
-      (this as { cause?: unknown }).cause = options.cause;
+    constructor(
+        message: string,
+        options?: { cause?: unknown; status?: number }
+    ) {
+        super(message);
+        this.name = "MetadataLookupError";
+        this.status = options?.status;
+        if (options?.cause !== undefined) {
+            // Preserve the underlying error without relying on the ES2022 cause arg
+            // being surfaced by every runtime.
+            (this as { cause?: unknown }).cause = options.cause;
+        }
     }
-  }
 }

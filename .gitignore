@@ -1,6 +1,20 @@
+# Dependencies
 node_modules/
+
+# Build output and packaged artifacts
 dist/
 artifacts/
-coverage/
+web-ext-artifacts/
 *.xpi
+
+# Test and tooling output
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors and OS
 .DS_Store
+.idea/
+.vscode/

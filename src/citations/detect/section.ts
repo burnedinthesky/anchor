@@ -8,24 +8,26 @@ import { assembleLines } from "./text";
 
 /** Heading line, allowing leading arabic ("7.") or roman ("VII.") numbering. */
 const HEADING =
-  /^\s*(?:\d+\.?\s+|[ivxlcdm]+\.?\s+)?(references|bibliography|works cited|literature cited)\s*$/i;
+    /^\s*(?:\d+\.?\s+|[ivxlcdm]+\.?\s+)?(references|bibliography|works cited|literature cited)\s*$/i;
 
 export interface RefBoundary {
-  /** 0-based index into the pages array. */
-  pageIndex: number;
-  /** Global item index (within that page) of the heading's first item. */
-  firstItem: number;
+    /** 0-based index into the pages array. */
+    pageIndex: number;
+    /** Global item index (within that page) of the heading's first item. */
+    firstItem: number;
 }
 
-export function findReferencesSection(pages: PDFTextContent[]): RefBoundary | null {
-  for (let p = 0; p < pages.length; p++) {
-    const page = pages[p];
-    if (!page) continue;
-    for (const line of assembleLines(page.items)) {
-      if (HEADING.test(line.text.trim())) {
-        return { pageIndex: p, firstItem: line.firstItem };
-      }
+export function findReferencesSection(
+    pages: PDFTextContent[]
+): RefBoundary | null {
+    for (let p = 0; p < pages.length; p++) {
+        const page = pages[p];
+        if (!page) continue;
+        for (const line of assembleLines(page.items)) {
+            if (HEADING.test(line.text.trim())) {
+                return { pageIndex: p, firstItem: line.firstItem };
+            }
+        }
     }
-  }
-  return null;
+    return null;
 }

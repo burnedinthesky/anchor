@@ -10,10 +10,10 @@
  * card opening.
  */
 import {
-  CARD_WIDTH_PX,
-  MAX_RELATED,
-  buildScholarUrl,
-  type PaperRecord,
+    CARD_WIDTH_PX,
+    MAX_RELATED,
+    buildScholarUrl,
+    type PaperRecord,
 } from "../types";
 
 /** Gap between the marker and the card, and margin from the viewport edge. */
@@ -25,16 +25,16 @@ const AUTHOR_LIMIT = 3;
 const ABSTRACT_TOGGLE_MIN = 220;
 
 export interface CardPoint {
-  left: number;
-  top: number;
+    left: number;
+    top: number;
 }
 export interface RectLike {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-  width: number;
-  height: number;
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
 }
 
 /**
@@ -43,38 +43,38 @@ export interface RectLike {
  * marker rect vertically.
  */
 export function computeCardPosition(
-  anchor: RectLike,
-  card: { w: number; h: number },
-  viewportW: number,
-  viewportH: number,
-  gap = GAP_PX,
-  margin = EDGE_MARGIN_PX
+    anchor: RectLike,
+    card: { w: number; h: number },
+    viewportW: number,
+    viewportH: number,
+    gap = GAP_PX,
+    margin = EDGE_MARGIN_PX
 ): CardPoint {
-  // Horizontal: prefer left-aligned to the marker (card extends rightward).
-  let left = anchor.left;
-  if (left + card.w + margin > viewportW) {
-    // Flip: align the card's right edge to the marker's right edge.
-    left = anchor.right - card.w;
-    if (left < margin) left = viewportW - card.w - margin;
-  }
-  if (left < margin) left = margin;
+    // Horizontal: prefer left-aligned to the marker (card extends rightward).
+    let left = anchor.left;
+    if (left + card.w + margin > viewportW) {
+        // Flip: align the card's right edge to the marker's right edge.
+        left = anchor.right - card.w;
+        if (left < margin) left = viewportW - card.w - margin;
+    }
+    if (left < margin) left = margin;
 
-  // Vertical: prefer below the marker, else above; never overlap the marker.
-  const spaceBelow = viewportH - anchor.bottom - gap;
-  const spaceAbove = anchor.top - gap;
-  let top: number;
-  if (card.h <= spaceBelow) {
-    top = anchor.bottom + gap;
-  } else if (card.h <= spaceAbove) {
-    top = anchor.top - gap - card.h;
-  } else if (spaceBelow >= spaceAbove) {
-    // Neither side fits fully; more room below. Stays below the marker.
-    top = anchor.bottom + gap;
-  } else {
-    // More room above; clamp to the margin (top+h <= anchor.top, no overlap).
-    top = Math.max(margin, anchor.top - gap - card.h);
-  }
-  return { left, top };
+    // Vertical: prefer below the marker, else above; never overlap the marker.
+    const spaceBelow = viewportH - anchor.bottom - gap;
+    const spaceAbove = anchor.top - gap;
+    let top: number;
+    if (card.h <= spaceBelow) {
+        top = anchor.bottom + gap;
+    } else if (card.h <= spaceAbove) {
+        top = anchor.top - gap - card.h;
+    } else if (spaceBelow >= spaceAbove) {
+        // Neither side fits fully; more room below. Stays below the marker.
+        top = anchor.bottom + gap;
+    } else {
+        // More room above; clamp to the margin (top+h <= anchor.top, no overlap).
+        top = Math.max(margin, anchor.top - gap - card.h);
+    }
+    return { left, top };
 }
 
 const CARD_CSS = `
@@ -166,349 +166,348 @@ ul.list li { margin: 0 0 4px; }
 `;
 
 export interface PreviewCardOptions {
-  doc?: Document;
-  /** Called whenever the card closes (by any route) so the owner can clear it. */
-  onClose?: () => void;
+    doc?: Document;
+    /** Called whenever the card closes (by any route) so the owner can clear it. */
+    onClose?: () => void;
 }
 
 export class PreviewCard {
-  private readonly doc: Document;
-  private readonly win: Window;
-  private readonly onClose?: () => void;
-  private readonly host: HTMLElement;
-  private readonly root: ShadowRoot;
-  private readonly card: HTMLElement;
-  private anchor: HTMLElement | null = null;
-  private io: IntersectionObserver | null = null;
-  private closed = false;
+    private readonly doc: Document;
+    private readonly win: Window;
+    private readonly onClose?: () => void;
+    private readonly host: HTMLElement;
+    private readonly root: ShadowRoot;
+    private readonly card: HTMLElement;
+    private anchor: HTMLElement | null = null;
+    private io: IntersectionObserver | null = null;
+    private closed = false;
 
-  private readonly onDocPointerDown = (ev: Event): void => {
-    if (!this.host.contains(ev.target as Node)) this.close();
-  };
-  private readonly onKeyDown = (ev: KeyboardEvent): void => {
-    if (ev.key === "Escape") {
-      ev.stopPropagation();
-      this.close();
-    } else if (ev.key === "Tab") {
-      this.trapTab(ev);
-    }
-  };
-  private readonly onReposition = (): void => this.reposition();
-
-  constructor(opts: PreviewCardOptions = {}) {
-    this.doc = opts.doc ?? document;
-    this.win = this.doc.defaultView ?? window;
-    this.onClose = opts.onClose;
-
-    this.host = this.doc.createElement("div");
-    this.host.setAttribute("data-anchor-card-host", "");
-    // Fixed overlay above pdf.js chrome (which tops out near 100001).
-    this.host.style.cssText = `position: fixed; top: 0; left: 0; width: ${CARD_WIDTH_PX}px; z-index: 2147483000; margin: 0; padding: 0;`;
-    this.root = this.host.attachShadow({ mode: "open" });
-
-    const style = this.doc.createElement("style");
-    style.textContent = CARD_CSS;
-    this.root.appendChild(style);
-
-    this.card = this.doc.createElement("div");
-    this.card.className = "card";
-    this.card.setAttribute("role", "dialog");
-    this.card.setAttribute("aria-modal", "true");
-    this.card.setAttribute("aria-label", "Citation preview");
-    this.card.tabIndex = -1;
-    this.root.appendChild(this.card);
-  }
-
-  /** Mount the card, anchored to `anchor`, and show the loading skeleton. */
-  open(anchor: HTMLElement): void {
-    this.anchor = anchor;
-    this.doc.body.appendChild(this.host);
-    this.showLoading();
-    this.reposition();
-
-    this.doc.addEventListener("pointerdown", this.onDocPointerDown, true);
-    this.doc.addEventListener("keydown", this.onKeyDown, true);
-    this.win.addEventListener("resize", this.onReposition);
-    this.observeAnchor();
-
-    this.card.focus({ preventScroll: true });
-  }
-
-  private observeAnchor(): void {
-    if (!this.anchor || typeof IntersectionObserver === "undefined") return;
-    this.io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (!e.isIntersecting) {
+    private readonly onDocPointerDown = (ev: Event): void => {
+        if (!this.host.contains(ev.target as Node)) this.close();
+    };
+    private readonly onKeyDown = (ev: KeyboardEvent): void => {
+        if (ev.key === "Escape") {
+            ev.stopPropagation();
             this.close();
-            return;
-          }
+        } else if (ev.key === "Tab") {
+            this.trapTab(ev);
         }
-      },
-      { threshold: 0 }
-    );
-    this.io.observe(this.anchor);
-  }
+    };
+    private readonly onReposition = (): void => this.reposition();
 
-  /** Re-anchor within the viewport (called after mount and after state change). */
-  reposition(): void {
-    if (this.closed || !this.anchor) return;
-    const a = this.anchor.getBoundingClientRect();
-    const c = this.card.getBoundingClientRect();
-    const pos = computeCardPosition(
-      a,
-      { w: c.width || CARD_WIDTH_PX, h: c.height },
-      this.win.innerWidth,
-      this.win.innerHeight
-    );
-    this.host.style.left = `${pos.left}px`;
-    this.host.style.top = `${pos.top}px`;
-  }
+    constructor(opts: PreviewCardOptions = {}) {
+        this.doc = opts.doc ?? document;
+        this.win = this.doc.defaultView ?? window;
+        this.onClose = opts.onClose;
 
-  close(): void {
-    if (this.closed) return;
-    this.closed = true;
-    this.doc.removeEventListener("pointerdown", this.onDocPointerDown, true);
-    this.doc.removeEventListener("keydown", this.onKeyDown, true);
-    this.win.removeEventListener("resize", this.onReposition);
-    this.io?.disconnect();
-    this.io = null;
-    this.host.remove();
-    // Restore focus without scrolling the document (spec §7.4 / acceptance 11).
-    this.anchor?.focus({ preventScroll: true });
-    this.onClose?.();
-  }
+        this.host = this.doc.createElement("div");
+        this.host.setAttribute("data-anchor-card-host", "");
+        // Fixed overlay above pdf.js chrome (which tops out near 100001).
+        this.host.style.cssText = `position: fixed; top: 0; left: 0; width: ${CARD_WIDTH_PX}px; z-index: 2147483000; margin: 0; padding: 0;`;
+        this.root = this.host.attachShadow({ mode: "open" });
 
-  isClosed(): boolean {
-    return this.closed;
-  }
+        const style = this.doc.createElement("style");
+        style.textContent = CARD_CSS;
+        this.root.appendChild(style);
 
-  // -- state renderers ------------------------------------------------------
-
-  showLoading(): void {
-    this.clear();
-    const sk = (cls: string): HTMLElement => this.el("div", `sk ${cls}`);
-    this.card.appendChild(sk("sk-title"));
-    this.card.appendChild(sk("sk-line"));
-    this.card.appendChild(sk("sk-line"));
-    this.card.appendChild(sk("sk-line short"));
-    this.refocusIfNeeded();
-    this.reposition();
-  }
-
-  showRecord(record: PaperRecord): void {
-    this.clear();
-    const partial = record.completeness === "partial";
-
-    // Title -> Scholar deep link.
-    const title = this.el("h2", "title");
-    title.appendChild(
-      this.link(record.title || "Untitled", record.scholarUrl)
-    );
-    this.card.appendChild(title);
-
-    // year · venue
-    const metaBits = [
-      record.year != null ? String(record.year) : "",
-      record.venue ?? "",
-    ].filter((s) => s !== "");
-    if (metaBits.length) {
-      const meta = this.el("p", "meta");
-      meta.textContent = metaBits.join(" · ");
-      this.card.appendChild(meta);
+        this.card = this.doc.createElement("div");
+        this.card.className = "card";
+        this.card.setAttribute("role", "dialog");
+        this.card.setAttribute("aria-modal", "true");
+        this.card.setAttribute("aria-label", "Citation preview");
+        this.card.tabIndex = -1;
+        this.root.appendChild(this.card);
     }
 
-    // Authors, truncated with "+N more".
-    if (record.authors.length) {
-      const authors = this.el("p", "authors");
-      const shown = record.authors.slice(0, AUTHOR_LIMIT);
-      let text = shown.join(", ");
-      const extra = record.authors.length - shown.length;
-      if (extra > 0) text += `, +${extra} more`;
-      authors.textContent = text;
-      this.card.appendChild(authors);
+    /** Mount the card, anchored to `anchor`, and show the loading skeleton. */
+    open(anchor: HTMLElement): void {
+        this.anchor = anchor;
+        this.doc.body.appendChild(this.host);
+        this.showLoading();
+        this.reposition();
+
+        this.doc.addEventListener("pointerdown", this.onDocPointerDown, true);
+        this.doc.addEventListener("keydown", this.onKeyDown, true);
+        this.win.addEventListener("resize", this.onReposition);
+        this.observeAnchor();
+
+        this.card.focus({ preventScroll: true });
     }
 
-    // Abstract, clamped with a "Show more" toggle.
-    if (record.abstract) {
-      const abs = this.el("p", "abstract");
-      abs.textContent = record.abstract;
-      const long = record.abstract.length > ABSTRACT_TOGGLE_MIN;
-      if (long) {
-        abs.classList.add("clamped");
-        const toggle = this.el("button", "toggle") as HTMLButtonElement;
-        toggle.type = "button";
-        toggle.textContent = "Show more";
-        toggle.addEventListener("click", () => {
-          const clamped = abs.classList.toggle("clamped");
-          toggle.textContent = clamped ? "Show more" : "Show less";
-          this.reposition();
-        });
-        this.card.appendChild(abs);
-        this.card.appendChild(toggle);
-      } else {
-        this.card.appendChild(abs);
-      }
+    private observeAnchor(): void {
+        if (!this.anchor || typeof IntersectionObserver === "undefined") return;
+        this.io = new IntersectionObserver(
+            (entries) => {
+                for (const e of entries) {
+                    if (!e.isIntersecting) {
+                        this.close();
+                        return;
+                    }
+                }
+            },
+            { threshold: 0 }
+        );
+        this.io.observe(this.anchor);
     }
 
-    // Metrics row.
-    if (record.citationCount != null) {
-      const m = this.el("p", "metrics");
-      m.textContent = `Cited by ${record.citationCount}`;
-      this.card.appendChild(m);
+    /** Re-anchor within the viewport (called after mount and after state change). */
+    reposition(): void {
+        if (this.closed || !this.anchor) return;
+        const a = this.anchor.getBoundingClientRect();
+        const c = this.card.getBoundingClientRect();
+        const pos = computeCardPosition(
+            a,
+            { w: c.width || CARD_WIDTH_PX, h: c.height },
+            this.win.innerWidth,
+            this.win.innerHeight
+        );
+        this.host.style.left = `${pos.left}px`;
+        this.host.style.top = `${pos.top}px`;
     }
 
-    // Related articles.
-    if (record.related.length) {
-      this.card.appendChild(this.sectionTitle("Related articles"));
-      const ul = this.el("ul", "list");
-      for (const r of record.related.slice(0, MAX_RELATED)) {
-        const li = this.doc.createElement("li");
-        li.appendChild(this.link(r.title, r.scholarUrl));
-        ul.appendChild(li);
-      }
-      this.card.appendChild(ul);
+    close(): void {
+        if (this.closed) return;
+        this.closed = true;
+        this.doc.removeEventListener(
+            "pointerdown",
+            this.onDocPointerDown,
+            true
+        );
+        this.doc.removeEventListener("keydown", this.onKeyDown, true);
+        this.win.removeEventListener("resize", this.onReposition);
+        this.io?.disconnect();
+        this.io = null;
+        this.host.remove();
+        // Restore focus without scrolling the document (spec §7.4 / acceptance 11).
+        this.anchor?.focus({ preventScroll: true });
+        this.onClose?.();
     }
 
-    // Versions.
-    if (record.versions.length) {
-      this.card.appendChild(
-        this.sectionTitle(`Versions (${record.versions.length})`)
-      );
-      const ul = this.el("ul", "list");
-      for (const v of record.versions) {
-        const li = this.doc.createElement("li");
-        if (v.url) li.appendChild(this.link(v.label, v.url));
-        else li.textContent = v.label;
-        ul.appendChild(li);
-      }
-      this.card.appendChild(ul);
+    isClosed(): boolean {
+        return this.closed;
     }
 
-    // Actions row.
-    const actions = this.el("div", "actions");
-    if (record.oaPdfUrl) {
-      const pdf = this.link(
-        "Open PDF",
-        record.oaPdfUrl,
-        "btn primary"
-      );
-      actions.appendChild(pdf);
-    }
-    actions.appendChild(
-      this.link("View on Google Scholar", record.scholarUrl, "btn")
-    );
-    this.card.appendChild(actions);
+    // -- state renderers ------------------------------------------------------
 
-    if (partial) {
-      const note = this.el("p", "note");
-      note.textContent = "Some details unavailable.";
-      this.card.appendChild(note);
+    showLoading(): void {
+        this.clear();
+        const sk = (cls: string): HTMLElement => this.el("div", `sk ${cls}`);
+        this.card.appendChild(sk("sk-title"));
+        this.card.appendChild(sk("sk-line"));
+        this.card.appendChild(sk("sk-line"));
+        this.card.appendChild(sk("sk-line short"));
+        this.refocusIfNeeded();
+        this.reposition();
     }
 
-    this.refocusIfNeeded();
-    this.reposition();
-  }
+    showRecord(record: PaperRecord): void {
+        this.clear();
+        const partial = record.completeness === "partial";
 
-  showEmpty(scholarUrl: string): void {
-    this.clear();
-    const msg = this.el("p", "empty");
-    msg.textContent = "Couldn't resolve this reference.";
-    this.card.appendChild(msg);
-    const actions = this.el("div", "actions");
-    actions.appendChild(
-      this.link("Search on Google Scholar", scholarUrl, "btn primary")
-    );
-    this.card.appendChild(actions);
-    this.refocusIfNeeded();
-    this.reposition();
-  }
+        // Title -> Scholar deep link.
+        const title = this.el("h2", "title");
+        title.appendChild(
+            this.link(record.title || "Untitled", record.scholarUrl)
+        );
+        this.card.appendChild(title);
 
-  showError(onRetry: () => void): void {
-    this.clear();
-    const msg = this.el("p", "error");
-    msg.textContent = "Couldn't load reference details.";
-    this.card.appendChild(msg);
-    const actions = this.el("div", "actions");
-    const retry = this.el("button", "btn primary") as HTMLButtonElement;
-    retry.type = "button";
-    retry.textContent = "Retry";
-    retry.addEventListener("click", () => onRetry());
-    actions.appendChild(retry);
-    this.card.appendChild(actions);
-    this.refocusIfNeeded();
-    this.reposition();
-  }
+        // year · venue
+        const metaBits = [
+            record.year != null ? String(record.year) : "",
+            record.venue ?? "",
+        ].filter((s) => s !== "");
+        if (metaBits.length) {
+            const meta = this.el("p", "meta");
+            meta.textContent = metaBits.join(" · ");
+            this.card.appendChild(meta);
+        }
 
-  /** Static helper for the empty state when only raw text is available. */
-  static scholarUrlFor(record: PaperRecord | null, rawText: string): string {
-    return record?.scholarUrl ?? buildScholarUrl(rawText);
-  }
+        // Authors, truncated with "+N more".
+        if (record.authors.length) {
+            const authors = this.el("p", "authors");
+            const shown = record.authors.slice(0, AUTHOR_LIMIT);
+            let text = shown.join(", ");
+            const extra = record.authors.length - shown.length;
+            if (extra > 0) text += `, +${extra} more`;
+            authors.textContent = text;
+            this.card.appendChild(authors);
+        }
 
-  // -- DOM helpers ----------------------------------------------------------
+        // Abstract, clamped with a "Show more" toggle.
+        if (record.abstract) {
+            const abs = this.el("p", "abstract");
+            abs.textContent = record.abstract;
+            const long = record.abstract.length > ABSTRACT_TOGGLE_MIN;
+            if (long) {
+                abs.classList.add("clamped");
+                const toggle = this.el("button", "toggle") as HTMLButtonElement;
+                toggle.type = "button";
+                toggle.textContent = "Show more";
+                toggle.addEventListener("click", () => {
+                    const clamped = abs.classList.toggle("clamped");
+                    toggle.textContent = clamped ? "Show more" : "Show less";
+                    this.reposition();
+                });
+                this.card.appendChild(abs);
+                this.card.appendChild(toggle);
+            } else {
+                this.card.appendChild(abs);
+            }
+        }
 
-  private clear(): void {
-    this.card.textContent = "";
-  }
+        // Metrics row.
+        if (record.citationCount != null) {
+            const m = this.el("p", "metrics");
+            m.textContent = `Cited by ${record.citationCount}`;
+            this.card.appendChild(m);
+        }
 
-  private el(tag: string, className?: string): HTMLElement {
-    const e = this.doc.createElement(tag);
-    if (className) e.className = className;
-    return e;
-  }
+        // Related articles.
+        if (record.related.length) {
+            this.card.appendChild(this.sectionTitle("Related articles"));
+            const ul = this.el("ul", "list");
+            for (const r of record.related.slice(0, MAX_RELATED)) {
+                const li = this.doc.createElement("li");
+                li.appendChild(this.link(r.title, r.scholarUrl));
+                ul.appendChild(li);
+            }
+            this.card.appendChild(ul);
+        }
 
-  private sectionTitle(text: string): HTMLElement {
-    const h = this.el("div", "section-title");
-    h.textContent = text;
-    return h;
-  }
+        // Versions.
+        if (record.versions.length) {
+            this.card.appendChild(
+                this.sectionTitle(`Versions (${record.versions.length})`)
+            );
+            const ul = this.el("ul", "list");
+            for (const v of record.versions) {
+                const li = this.doc.createElement("li");
+                if (v.url) li.appendChild(this.link(v.label, v.url));
+                else li.textContent = v.label;
+                ul.appendChild(li);
+            }
+            this.card.appendChild(ul);
+        }
 
-  private link(text: string, href: string, className?: string): HTMLElement {
-    const a = this.doc.createElement("a");
-    a.textContent = text;
-    a.href = href;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    if (className) a.className = className;
-    return a;
-  }
+        // Actions row.
+        const actions = this.el("div", "actions");
+        if (record.oaPdfUrl) {
+            const pdf = this.link("Open PDF", record.oaPdfUrl, "btn primary");
+            actions.appendChild(pdf);
+        }
+        actions.appendChild(
+            this.link("View on Google Scholar", record.scholarUrl, "btn")
+        );
+        this.card.appendChild(actions);
 
-  /** Keep focus inside the dialog if the previously focused node was removed. */
-  private refocusIfNeeded(): void {
-    const active = this.root.activeElement ?? this.doc.activeElement;
-    if (!active || !this.card.contains(active)) {
-      this.card.focus({ preventScroll: true });
+        if (partial) {
+            const note = this.el("p", "note");
+            note.textContent = "Some details unavailable.";
+            this.card.appendChild(note);
+        }
+
+        this.refocusIfNeeded();
+        this.reposition();
     }
-  }
 
-  private focusable(): HTMLElement[] {
-    return Array.from(
-      this.card.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
-  }
+    showEmpty(scholarUrl: string): void {
+        this.clear();
+        const msg = this.el("p", "empty");
+        msg.textContent = "Couldn't resolve this reference.";
+        this.card.appendChild(msg);
+        const actions = this.el("div", "actions");
+        actions.appendChild(
+            this.link("Search on Google Scholar", scholarUrl, "btn primary")
+        );
+        this.card.appendChild(actions);
+        this.refocusIfNeeded();
+        this.reposition();
+    }
 
-  private trapTab(ev: KeyboardEvent): void {
-    const nodes = this.focusable();
-    if (nodes.length === 0) {
-      ev.preventDefault();
-      this.card.focus({ preventScroll: true });
-      return;
+    showError(onRetry: () => void): void {
+        this.clear();
+        const msg = this.el("p", "error");
+        msg.textContent = "Couldn't load reference details.";
+        this.card.appendChild(msg);
+        const actions = this.el("div", "actions");
+        const retry = this.el("button", "btn primary") as HTMLButtonElement;
+        retry.type = "button";
+        retry.textContent = "Retry";
+        retry.addEventListener("click", () => onRetry());
+        actions.appendChild(retry);
+        this.card.appendChild(actions);
+        this.refocusIfNeeded();
+        this.reposition();
     }
-    const first = nodes[0]!;
-    const last = nodes[nodes.length - 1]!;
-    const active = (this.root.activeElement ?? this.doc.activeElement) as
-      | HTMLElement
-      | null;
-    if (ev.shiftKey) {
-      if (active === first || active === this.card) {
-        ev.preventDefault();
-        last.focus({ preventScroll: true });
-      }
-    } else if (active === last) {
-      ev.preventDefault();
-      first.focus({ preventScroll: true });
+
+    /** Static helper for the empty state when only raw text is available. */
+    static scholarUrlFor(record: PaperRecord | null, rawText: string): string {
+        return record?.scholarUrl ?? buildScholarUrl(rawText);
     }
-  }
+
+    // -- DOM helpers ----------------------------------------------------------
+
+    private clear(): void {
+        this.card.textContent = "";
+    }
+
+    private el(tag: string, className?: string): HTMLElement {
+        const e = this.doc.createElement(tag);
+        if (className) e.className = className;
+        return e;
+    }
+
+    private sectionTitle(text: string): HTMLElement {
+        const h = this.el("div", "section-title");
+        h.textContent = text;
+        return h;
+    }
+
+    private link(text: string, href: string, className?: string): HTMLElement {
+        const a = this.doc.createElement("a");
+        a.textContent = text;
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        if (className) a.className = className;
+        return a;
+    }
+
+    /** Keep focus inside the dialog if the previously focused node was removed. */
+    private refocusIfNeeded(): void {
+        const active = this.root.activeElement ?? this.doc.activeElement;
+        if (!active || !this.card.contains(active)) {
+            this.card.focus({ preventScroll: true });
+        }
+    }
+
+    private focusable(): HTMLElement[] {
+        return Array.from(
+            this.card.querySelectorAll<HTMLElement>(
+                'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )
+        );
+    }
+
+    private trapTab(ev: KeyboardEvent): void {
+        const nodes = this.focusable();
+        if (nodes.length === 0) {
+            ev.preventDefault();
+            this.card.focus({ preventScroll: true });
+            return;
+        }
+        const first = nodes[0]!;
+        const last = nodes[nodes.length - 1]!;
+        const active = (this.root.activeElement ??
+            this.doc.activeElement) as HTMLElement | null;
+        if (ev.shiftKey) {
+            if (active === first || active === this.card) {
+                ev.preventDefault();
+                last.focus({ preventScroll: true });
+            }
+        } else if (active === last) {
+            ev.preventDefault();
+            first.focus({ preventScroll: true });
+        }
+    }
 }

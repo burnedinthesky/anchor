@@ -20,7 +20,7 @@ const EXTENSION_BASE = browser.runtime.getURL("");
 
 /** Build the viewer URL that renders `pdfUrl`. */
 function toViewerUrl(pdfUrl: string): string {
-  return `${VIEWER_PAGE}?file=${encodeURIComponent(pdfUrl)}`;
+    return `${VIEWER_PAGE}?file=${encodeURIComponent(pdfUrl)}`;
 }
 
 /**
@@ -28,63 +28,63 @@ function toViewerUrl(pdfUrl: string): string {
  * anything already pointing at the viewer (prevents redirect loops).
  */
 function isOwnRequest(url: string): boolean {
-  return url.startsWith(EXTENSION_BASE) || url.startsWith(VIEWER_PAGE);
+    return url.startsWith(EXTENSION_BASE) || url.startsWith(VIEWER_PAGE);
 }
 
 /** Only http(s) documents are candidates for interception. */
 function isHttp(url: string): boolean {
-  return url.startsWith("http://") || url.startsWith("https://");
+    return url.startsWith("http://") || url.startsWith("https://");
 }
 
 /** URL path (ignoring query/hash) ends in `.pdf`. */
 function pathLooksLikePdf(url: string): boolean {
-  try {
-    return new URL(url).pathname.toLowerCase().endsWith(".pdf");
-  } catch {
-    return false;
-  }
+    try {
+        return new URL(url).pathname.toLowerCase().endsWith(".pdf");
+    } catch {
+        return false;
+    }
 }
 
 // --- Hook 1: obvious `.pdf` URLs, redirected before the network is hit -------
 browser.webRequest.onBeforeRequest.addListener(
-  (details): browser.webRequest.BlockingResponse | undefined => {
-    const { url } = details;
-    if (isOwnRequest(url) || !isHttp(url) || !pathLooksLikePdf(url)) {
-      return undefined;
-    }
-    return { redirectUrl: toViewerUrl(url) };
-  },
-  { urls: ["<all_urls>"], types: ["main_frame"] },
-  ["blocking"]
+    (details): browser.webRequest.BlockingResponse | undefined => {
+        const { url } = details;
+        if (isOwnRequest(url) || !isHttp(url) || !pathLooksLikePdf(url)) {
+            return undefined;
+        }
+        return { redirectUrl: toViewerUrl(url) };
+    },
+    { urls: ["<all_urls>"], types: ["main_frame"] },
+    ["blocking"]
 );
 
 // --- Hook 2: PDFs served without a `.pdf` extension, detected by header -------
 browser.webRequest.onHeadersReceived.addListener(
-  (details): browser.webRequest.BlockingResponse | undefined => {
-    const { url } = details;
-    if (isOwnRequest(url) || !isHttp(url)) {
-      return undefined;
-    }
+    (details): browser.webRequest.BlockingResponse | undefined => {
+        const { url } = details;
+        if (isOwnRequest(url) || !isHttp(url)) {
+            return undefined;
+        }
 
-    let contentType = "";
-    let disposition = "";
-    for (const header of details.responseHeaders ?? []) {
-      const name = header.name.toLowerCase();
-      if (name === "content-type") {
-        contentType = (header.value ?? "").toLowerCase();
-      } else if (name === "content-disposition") {
-        disposition = (header.value ?? "").toLowerCase();
-      }
-    }
+        let contentType = "";
+        let disposition = "";
+        for (const header of details.responseHeaders ?? []) {
+            const name = header.name.toLowerCase();
+            if (name === "content-type") {
+                contentType = (header.value ?? "").toLowerCase();
+            } else if (name === "content-disposition") {
+                disposition = (header.value ?? "").toLowerCase();
+            }
+        }
 
-    const isPdf = contentType.split(";")[0]?.trim() === "application/pdf";
-    // Respect explicit "download this" intent; don't hijack file downloads.
-    const isAttachment = disposition.includes("attachment");
-    if (!isPdf || isAttachment) {
-      return undefined;
-    }
-    return { redirectUrl: toViewerUrl(url) };
-  },
-  { urls: ["<all_urls>"], types: ["main_frame"] },
-  ["blocking", "responseHeaders"]
+        const isPdf = contentType.split(";")[0]?.trim() === "application/pdf";
+        // Respect explicit "download this" intent; don't hijack file downloads.
+        const isAttachment = disposition.includes("attachment");
+        if (!isPdf || isAttachment) {
+            return undefined;
+        }
+        return { redirectUrl: toViewerUrl(url) };
+    },
+    { urls: ["<all_urls>"], types: ["main_frame"] },
+    ["blocking", "responseHeaders"]
 );

@@ -11,12 +11,12 @@ import wrapJson from "./wrap.json";
 import mixedJson from "./mixed.json";
 
 export const fixtures = {
-  numeric: numericJson as unknown as PDFTextContent[],
-  authorYear: authorYearJson as unknown as PDFTextContent[],
-  superscript: superscriptJson as unknown as PDFTextContent[],
-  noReferences: noReferencesJson as unknown as PDFTextContent[],
-  wrap: wrapJson as unknown as PDFTextContent[],
-  mixed: mixedJson as unknown as PDFTextContent[],
+    numeric: numericJson as unknown as PDFTextContent[],
+    authorYear: authorYearJson as unknown as PDFTextContent[],
+    superscript: superscriptJson as unknown as PDFTextContent[],
+    noReferences: noReferencesJson as unknown as PDFTextContent[],
+    wrap: wrapJson as unknown as PDFTextContent[],
+    mixed: mixedJson as unknown as PDFTextContent[],
 };
 
 /**
@@ -24,10 +24,10 @@ export const fixtures = {
  * (PDF origin bottom-left → viewport top-left) using `pageHeight`.
  */
 export function makeViewport(scale = 1.5, pageHeight = 792): ViewportLike {
-  return {
-    scale,
-    convertToViewportPoint(x: number, y: number): [number, number] {
-      return [x * scale, (pageHeight - y) * scale];
-    },
-  };
+    return {
+        scale,
+        convertToViewportPoint(x: number, y: number): [number, number] {
+            return [x * scale, (pageHeight - y) * scale];
+        },
+    };
 }

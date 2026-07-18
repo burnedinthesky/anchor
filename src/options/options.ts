@@ -11,28 +11,28 @@ const status = document.getElementById("status") as HTMLElement;
 let statusTimer: ReturnType<typeof setTimeout> | undefined;
 
 function flashSaved(): void {
-  status.textContent = "Saved.";
-  if (statusTimer !== undefined) {
-    clearTimeout(statusTimer);
-  }
-  statusTimer = setTimeout(() => {
-    status.textContent = "";
-  }, 1500);
+    status.textContent = "Saved.";
+    if (statusTimer !== undefined) {
+        clearTimeout(statusTimer);
+    }
+    statusTimer = setTimeout(() => {
+        status.textContent = "";
+    }, 1500);
 }
 
 async function load(): Promise<void> {
-  const settings = await getSettings();
-  mailtoInput.value = settings.mailto;
-  hoverInput.checked = settings.hoverPreview;
+    const settings = await getSettings();
+    mailtoInput.value = settings.mailto;
+    hoverInput.checked = settings.hoverPreview;
 }
 
 async function persist(): Promise<void> {
-  const next: Settings = {
-    mailto: mailtoInput.value.trim(),
-    hoverPreview: hoverInput.checked,
-  };
-  await saveSettings(next);
-  flashSaved();
+    const next: Settings = {
+        mailto: mailtoInput.value.trim(),
+        hoverPreview: hoverInput.checked,
+    };
+    await saveSettings(next);
+    flashSaved();
 }
 
 mailtoInput.addEventListener("change", () => void persist());
