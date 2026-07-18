@@ -62,6 +62,27 @@ describe("PreviewCard states", () => {
         document.body.innerHTML = "";
     });
 
+    it("follows the anchor while the viewer scrolls (regression)", async () => {
+        card.open(anchor);
+        const host = cardHost()!;
+        const topBefore = parseFloat(host.style.top);
+
+        // Simulate the viewer container scrolling: the marker moves up 50px.
+        anchor.getBoundingClientRect = () => rect(100, 150, 20, 12);
+        document.body.dispatchEvent(new Event("scroll"));
+        await new Promise((r) => requestAnimationFrame(() => r(null)));
+
+        expect(parseFloat(host.style.top)).toBeCloseTo(topBefore - 50, 0);
+    });
+
+    it("closes when the anchor node is destroyed (page recycled) during scroll", async () => {
+        card.open(anchor);
+        anchor.remove();
+        document.body.dispatchEvent(new Event("scroll"));
+        await new Promise((r) => requestAnimationFrame(() => r(null)));
+        expect(cardHost()).toBeNull();
+    });
+
     it("loading shows a skeleton synchronously on open", () => {
         card.open(anchor);
         const root = cardRoot();

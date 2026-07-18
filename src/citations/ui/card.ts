@@ -190,6 +190,27 @@ export class PreviewCard {
         }
     };
     private readonly onReposition = (): void => this.reposition();
+    private scrollRaf = 0;
+    /**
+     * Follow the text while the viewer scrolls: re-anchor on every scroll
+     * (rAF-throttled). Scroll events don't bubble, but they do capture, so a
+     * document-level capture listener sees #viewerContainer's scrolling. If
+     * the anchor button was destroyed (pdf.js recycled the page), close.
+     */
+    private readonly onAnyScroll = (): void => {
+        if (this.scrollRaf) return;
+        const raf =
+            this.win.requestAnimationFrame?.bind(this.win) ??
+            ((cb: FrameRequestCallback) => (cb(0), 0));
+        this.scrollRaf = raf(() => {
+            this.scrollRaf = 0;
+            if (this.anchor && !this.anchor.isConnected) {
+                this.close();
+                return;
+            }
+            this.reposition();
+        });
+    };
 
     constructor(opts: PreviewCardOptions = {}) {
         this.doc = opts.doc ?? document;
@@ -225,6 +246,7 @@ export class PreviewCard {
         this.doc.addEventListener("pointerdown", this.onDocPointerDown, true);
         this.doc.addEventListener("keydown", this.onKeyDown, true);
         this.win.addEventListener("resize", this.onReposition);
+        this.doc.addEventListener("scroll", this.onAnyScroll, true);
         this.observeAnchor();
 
         this.card.focus({ preventScroll: true });
@@ -271,6 +293,11 @@ export class PreviewCard {
         );
         this.doc.removeEventListener("keydown", this.onKeyDown, true);
         this.win.removeEventListener("resize", this.onReposition);
+        this.doc.removeEventListener("scroll", this.onAnyScroll, true);
+        if (this.scrollRaf) {
+            this.win.cancelAnimationFrame?.(this.scrollRaf);
+            this.scrollRaf = 0;
+        }
         this.io?.disconnect();
         this.io = null;
         this.host.remove();

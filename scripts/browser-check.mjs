@@ -159,6 +159,26 @@ if (btnCount > 0) {
         `reading position unchanged (before=${scrollBefore.top}, after=${scrollAfter.top})`
     );
 
+    // The card follows the text while the viewer scrolls.
+    const followed = await page.evaluate(async () => {
+        const host = document.querySelector("[data-anchor-card-host]");
+        const c = document.getElementById("viewerContainer");
+        const before = host.getBoundingClientRect().top;
+        c.scrollTop += 40;
+        c.dispatchEvent(new Event("scroll"));
+        await new Promise((r) => requestAnimationFrame(() => r()));
+        await new Promise((r) => requestAnimationFrame(() => r()));
+        const after = host.getBoundingClientRect().top;
+        c.scrollTop -= 40; // restore for the scroll-invariance check below
+        c.dispatchEvent(new Event("scroll"));
+        await new Promise((r) => requestAnimationFrame(() => r()));
+        return { before, after };
+    });
+    check(
+        Math.abs(followed.before - 40 - followed.after) <= 2,
+        `card follows viewer scroll (top ${followed.before} -> ${followed.after} after +40px scroll)`
+    );
+
     await page.keyboard.press("Escape");
     await page.waitForTimeout(150);
     const cardGone = await page.evaluate(

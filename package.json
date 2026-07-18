@@ -1,6 +1,6 @@
 {
     "name": "anchor",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "description": "Firefox PDF reader extension with interactive citation previews",
     "private": true,
     "type": "module",
