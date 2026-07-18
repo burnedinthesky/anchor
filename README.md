@@ -1,7 +1,7 @@
 # Anchor PDF Reader
 
 A Firefox extension that replaces the browser's PDF experience with its own [pdf.js](https://mozilla.github.io/pdf.js/)-based viewer and adds **interactive
-citation previews**: click an in-text citation like `[12]` or `(Smith et al., 2021)` and get an in-place card with the cited paper's title, authors, abstract, citation count, related articles, versions, an open-access PDF link when one exists, and a Google Scholar deep link — without ever losing your reading position.
+citation previews**: click an in-text citation like `[12]` or `(Smith et al., 2021)` and get an in-place card with the cited paper's title, authors, abstract, citation count, versions, an open-access PDF link when one exists, and a Google Scholar deep link — without ever losing your reading position.
 
 ## How it works
 
@@ -24,11 +24,18 @@ pnpm build             # bundles the extension into dist/
 pnpm exec web-ext run --source-dir dist   # launches Firefox with the extension loaded
 ```
 
-Then open any PDF URL (an arXiv paper works well). To produce an installable artifact:
+Then open any PDF URL (an arXiv paper works well).
+
+### Releasing a new version
+
+1. Bump the version in **both** `package.json` and `src/manifest.json` (keep them in sync — the artifact is named from the manifest version).
+2. Build and package:
 
 ```bash
-pnpm package           # -> artifacts/anchor_pdf_reader-<version>.zip (rename .xpi)
+pnpm package           # -> artifacts/anchor_pdf_reader-<version>.{zip,xpi}
 ```
+
+`pnpm package` bundles into `dist/`, runs `web-ext build` (which emits the `.zip`), then `scripts/make-xpi.mjs` copies that archive to a matching `.xpi` for Firefox installs. Both files land in `artifacts/`; older-version archives are left in place, so delete them if you don't want them lingering.
 
 ## Development
 

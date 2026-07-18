@@ -177,13 +177,13 @@ A fully or partially populated `PaperRecord` (see §8), tagged with which backen
 
 ### 7.2 Anchoring & layout
 
-- Anchor to the marker rect; prefer opening below-right, flip to stay within the viewport. Never cover the marker itself. Fixed width (default 720 px), max height with internal scroll.
+- Anchor to the marker rect; prefer opening below-right, flip to stay within the viewport. Never cover the marker itself. Fixed width (default 600 px), max height with internal scroll.
 - Rendered in a shadow-DOM overlay container so document CSS can't leak in and the card can't shift page layout (guarantees "don't lose your place").
 
 ### 7.3 States
 
 - **Loading:** skeleton with title placeholder; show as soon as click registers (< 16 ms), before network returns.
-- **Success:** title (link → Scholar deep link), author list (truncate with "+N more"), year · venue, abstract (clamped to 12 lines, "Show more"), a metrics row (`Cited by {n}`), "Versions" (count + list of hosts/links), actions row (`Open PDF` if OA, `View on Google Scholar`). ("Related articles" is still fetched into the record but hidden in the card.)
+- **Success:** title (link → Scholar deep link), author list (truncate with "+N more"), year · venue, abstract (clamped to 12 lines, "Show more"), and a footer row combining the additional info (`Cited by {n}`, Versions count + inline host links) on the left with the actions (`Open PDF` if OA, `View on Google Scholar`) on the right. ("Related articles" is still fetched into the record but hidden in the card.)
 - **Partial:** render what resolved; hide empty sections; show a subtle "some details unavailable" note.
 - **Empty (unresolved):** "Couldn't resolve this reference," with a `Search on Google Scholar` button using the raw reference text.
 - **Error:** network/timeout message with a `Retry` button.
@@ -199,7 +199,7 @@ A fully or partially populated `PaperRecord` (see §8), tagged with which backen
 
 ## 8. Data model (TypeScript)
 
-See `src/citations/types.ts` — the authoritative, slightly extended version of the spec's data model (adds `ViewportLike`, `PageTextReadyEvent`, `ordinals`, `DEFAULT_MAILTO`, `buildScholarUrl`). Config constants: `MAX_RELATED = 5`, `MAX_ABSTRACT_CHARS = 1200`, `CACHE_TTL_DAYS = 30`, `HOVER_DWELL_MS = 400`, `CARD_WIDTH_PX = 720`.
+See `src/citations/types.ts` — the authoritative, slightly extended version of the spec's data model (adds `ViewportLike`, `PageTextReadyEvent`, `ordinals`, `DEFAULT_MAILTO`, `buildScholarUrl`). Config constants: `MAX_RELATED = 5`, `MAX_ABSTRACT_CHARS = 1200`, `CACHE_TTL_DAYS = 30`, `HOVER_DWELL_MS = 400`, `CARD_WIDTH_PX = 600`.
 
 ---
 

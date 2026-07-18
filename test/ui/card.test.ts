@@ -69,7 +69,7 @@ describe("PreviewCard states", () => {
         expect(root.querySelector(".sk-title")).not.toBeNull();
     });
 
-    it("success renders title link, authors +N more, metrics, versions, actions", () => {
+    it("success renders title, authors, and a footer row with metrics + versions beside the actions", () => {
         card.open(anchor);
         card.showRecord(makeRecord());
         const root = cardRoot();
@@ -84,27 +84,32 @@ describe("PreviewCard states", () => {
             "+2 more"
         );
         expect(root.querySelector(".meta")!.textContent).toBe("2021 · NeurIPS");
-        expect(root.querySelector(".metrics")!.textContent).toBe(
+
+        // Metrics, versions, and the actions all share one footer row.
+        const footer = root.querySelector(".actions")!;
+        expect(footer.querySelector(".metrics")!.textContent).toBe(
             "Cited by 142"
         );
+        const versions = footer.querySelector(".versions")!;
+        expect(versions.textContent).toContain("arxiv.org");
+        expect(versions.textContent).toContain("publisher (no link)");
+        // Only the version with a URL is a link.
+        expect(versions.querySelectorAll("a").length).toBe(1);
 
-        // Related articles are hidden; the only list rendered is versions.
-        const sectionTitles = Array.from(
-            root.querySelectorAll(".section-title")
-        ).map((s) => s.textContent);
-        expect(sectionTitles).not.toContain("Related articles");
-        const lists = root.querySelectorAll("ul.list");
-        expect(lists.length).toBe(1);
-        expect(lists[0]!.querySelectorAll("li").length).toBe(2);
+        // Related articles are hidden and versions is inline — no ul list.
+        expect(root.querySelector("ul.list")).toBeNull();
 
-        const actionLinks = root.querySelectorAll(".actions a");
-        const labels = Array.from(actionLinks).map((a) => a.textContent);
-        expect(labels).toContain("Open PDF");
-        expect(labels).toContain("View on Google Scholar");
+        const buttonLabels = Array.from(
+            footer.querySelectorAll(".buttons a")
+        ).map((a) => a.textContent);
+        expect(buttonLabels).toContain("Open PDF");
+        expect(buttonLabels).toContain("View on Google Scholar");
     });
 
-    it("abstract Show more toggles clamp", () => {
+    it("abstract Show more toggles clamp when the text overflows", () => {
         card.open(anchor);
+        // jsdom reports no layout; force the overflow branch.
+        vi.spyOn(card as never, "isOverflowing").mockReturnValue(true);
         card.showRecord(makeRecord());
         const root = cardRoot();
         const abs = root.querySelector(".abstract")!;
@@ -114,6 +119,17 @@ describe("PreviewCard states", () => {
         toggle.click();
         expect(abs.classList.contains("clamped")).toBe(false);
         expect(toggle.textContent).toBe("Show less");
+    });
+
+    it("abstract that fits is shown unclamped with no toggle", () => {
+        card.open(anchor);
+        vi.spyOn(card as never, "isOverflowing").mockReturnValue(false);
+        card.showRecord(makeRecord());
+        const root = cardRoot();
+        expect(root.querySelector(".abstract")!.classList.contains("clamped")).toBe(
+            false
+        );
+        expect(root.querySelector(".toggle")).toBeNull();
     });
 
     it("author truncation omitted when few authors", () => {

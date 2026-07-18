@@ -1,6 +1,6 @@
 {
     "name": "anchor",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "Firefox PDF reader extension with interactive citation previews",
     "private": true,
     "type": "module",
@@ -13,7 +13,7 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "lint:ext": "web-ext lint --source-dir dist",
-        "package": "pnpm run build && web-ext build --source-dir dist --artifacts-dir artifacts --overwrite-dest",
+        "package": "pnpm run build && web-ext build --source-dir dist --artifacts-dir artifacts --overwrite-dest && node scripts/make-xpi.mjs",
         "fixtures": "tsx scripts/make-fixtures.ts"
     },
     "packageManager": "pnpm@11.9.0",

@@ -16,8 +16,6 @@ const GAP_PX = 6;
 const EDGE_MARGIN_PX = 8;
 /** Authors shown before collapsing the rest into "+N more". */
 const AUTHOR_LIMIT = 3;
-/** Show the abstract "Show more" toggle only past this length. */
-const ABSTRACT_TOGGLE_MIN = 220;
 
 export interface CardPoint {
     left: number;
@@ -107,15 +105,18 @@ const CARD_CSS = `
   color: var(--anchor-card-link, #1a5fb4);
 }
 .toggle:hover { text-decoration: underline; }
-.metrics { margin: 0 0 8px; color: var(--anchor-card-muted, #666); }
-.section-title {
-  font-weight: 600; margin: 10px 0 4px; font-size: 12px;
-  text-transform: uppercase; letter-spacing: 0.03em;
-  color: var(--anchor-card-muted, #666);
+.metrics { margin: 0; color: var(--anchor-card-muted, #666); white-space: nowrap; }
+.info {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px;
+  min-width: 0; color: var(--anchor-card-muted, #666);
 }
-ul.list { margin: 0; padding: 0; list-style: none; }
-ul.list li { margin: 0 0 4px; }
-.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.versions-label { font-weight: 600; }
+.buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Footer: additional info (cited by, versions) shares a row with the actions. */
+.actions {
+  display: flex; gap: 10px 14px; flex-wrap: wrap; margin-top: 12px;
+  align-items: center; justify-content: space-between;
+}
 .actions .btn, .actions a.btn {
   border: 1px solid var(--anchor-card-border, #d5d5d5);
   border-radius: 6px; padding: 5px 10px; text-decoration: none;
@@ -328,13 +329,14 @@ export class PreviewCard {
             this.card.appendChild(authors);
         }
 
-        // Abstract, clamped with a "Show more" toggle.
+        // Abstract, clamped to a fixed number of lines with a "Show more"
+        // toggle — but only when the clamp actually truncates the text.
         if (record.abstract) {
             const abs = this.el("p", "abstract");
             abs.textContent = record.abstract;
-            const long = record.abstract.length > ABSTRACT_TOGGLE_MIN;
-            if (long) {
-                abs.classList.add("clamped");
+            abs.classList.add("clamped");
+            this.card.appendChild(abs);
+            if (this.isOverflowing(abs)) {
                 const toggle = this.el("button", "toggle") as HTMLButtonElement;
                 toggle.type = "button";
                 toggle.textContent = "Show more";
@@ -343,45 +345,53 @@ export class PreviewCard {
                     toggle.textContent = clamped ? "Show more" : "Show less";
                     this.reposition();
                 });
-                this.card.appendChild(abs);
                 this.card.appendChild(toggle);
             } else {
-                this.card.appendChild(abs);
+                // Already fits within the clamp — show it whole, no toggle.
+                abs.classList.remove("clamped");
             }
         }
 
-        // Metrics row.
+        // Footer row: additional info (cited by, versions) sits on the same
+        // row as the action buttons, info left / buttons right.
+        const footer = this.el("div", "actions");
+
+        const info = this.el("div", "info");
         if (record.citationCount != null) {
-            const m = this.el("p", "metrics");
+            const m = this.el("span", "metrics");
             m.textContent = `Cited by ${record.citationCount}`;
-            this.card.appendChild(m);
+            info.appendChild(m);
         }
-
-        // Versions.
         if (record.versions.length) {
-            this.card.appendChild(
-                this.sectionTitle(`Versions (${record.versions.length})`)
-            );
-            const ul = this.el("ul", "list");
-            for (const v of record.versions) {
-                const li = this.doc.createElement("li");
-                if (v.url) li.appendChild(this.link(v.label, v.url));
-                else li.textContent = v.label;
-                ul.appendChild(li);
-            }
-            this.card.appendChild(ul);
+            const versions = this.el("span", "versions");
+            const label = this.el("span", "versions-label");
+            label.textContent = `Versions (${record.versions.length}): `;
+            versions.appendChild(label);
+            record.versions.forEach((v, i) => {
+                if (i > 0) versions.appendChild(this.doc.createTextNode(", "));
+                if (v.url) versions.appendChild(this.link(v.label, v.url));
+                else {
+                    const s = this.doc.createElement("span");
+                    s.textContent = v.label;
+                    versions.appendChild(s);
+                }
+            });
+            info.appendChild(versions);
         }
+        if (info.childNodes.length) footer.appendChild(info);
 
-        // Actions row.
-        const actions = this.el("div", "actions");
+        const buttons = this.el("div", "buttons");
         if (record.oaPdfUrl) {
-            const pdf = this.link("Open PDF", record.oaPdfUrl, "btn primary");
-            actions.appendChild(pdf);
+            buttons.appendChild(
+                this.link("Open PDF", record.oaPdfUrl, "btn primary")
+            );
         }
-        actions.appendChild(
+        buttons.appendChild(
             this.link("View on Google Scholar", record.scholarUrl, "btn")
         );
-        this.card.appendChild(actions);
+        footer.appendChild(buttons);
+
+        this.card.appendChild(footer);
 
         if (partial) {
             const note = this.el("p", "note");
@@ -440,10 +450,9 @@ export class PreviewCard {
         return e;
     }
 
-    private sectionTitle(text: string): HTMLElement {
-        const h = this.el("div", "section-title");
-        h.textContent = text;
-        return h;
+    /** True when the element's content is taller than its (clamped) box. */
+    private isOverflowing(el: HTMLElement): boolean {
+        return el.scrollHeight - el.clientHeight > 1;
     }
 
     private link(text: string, href: string, className?: string): HTMLElement {
