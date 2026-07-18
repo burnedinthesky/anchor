@@ -1,18 +1,11 @@
 # Anchor PDF Reader
 
-A Firefox extension that replaces the browser's PDF experience with its own
-[pdf.js](https://mozilla.github.io/pdf.js/)-based viewer and adds **interactive
-citation previews**: click an in-text citation like `[12]` or
-`(Smith et al., 2021)` and get an in-place card with the cited paper's title,
-authors, abstract, citation count, related articles, versions, an open-access
-PDF link when one exists, and a Google Scholar deep link — without ever losing
-your reading position.
+A Firefox extension that replaces the browser's PDF experience with its own [pdf.js](https://mozilla.github.io/pdf.js/)-based viewer and adds **interactive
+citation previews**: click an in-text citation like `[12]` or `(Smith et al., 2021)` and get an in-place card with the cited paper's title, authors, abstract, citation count, related articles, versions, an open-access PDF link when one exists, and a Google Scholar deep link — without ever losing your reading position.
 
 ## How it works
 
-PDF navigations are intercepted by a blocking `webRequest` handler and
-redirected to the extension's viewer page (a vendored pdf.js generic viewer).
-Inside the viewer, a four-stage pipeline runs:
+PDF navigations are intercepted by a blocking `webRequest` handler and redirected to the extension's viewer page (a vendored pdf.js generic viewer). Inside the viewer, a four-stage pipeline runs:
 
 | Stage      | What it does                                                                                                                                                                                   | Where                     |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
@@ -21,9 +14,7 @@ Inside the viewer, a four-stage pipeline runs:
 | 3. Lookup  | Resolves the reference to a paper record via **OpenAlex → Crossref → Semantic Scholar**, with a 30-day cache, request throttling, and 429 backoff                                              | `src/citations/metadata/` |
 | 4. Card    | Renders the preview card (shadow DOM, focus-trapped dialog, five explicit states) anchored at the marker                                                                                       | `src/citations/ui/`       |
 
-Stages 1–2 are pure and local; only stage 3 touches the network, and only the
-three metadata APIs above (Google Scholar is never scraped — it is linked to,
-not fetched). The full behavioral spec lives in [`docs/SPEC.md`](docs/SPEC.md).
+Stages 1–2 are pure and local; only stage 3 touches the network, and only the three metadata APIs above (Google Scholar is never scraped — it is linked to, not fetched). The full behavioral spec lives in [`docs/SPEC.md`](docs/SPEC.md).
 
 ## Building and running
 
@@ -33,8 +24,7 @@ pnpm build             # bundles the extension into dist/
 pnpm exec web-ext run --source-dir dist   # launches Firefox with the extension loaded
 ```
 
-Then open any PDF URL (an arXiv paper works well). To produce an installable
-artifact:
+Then open any PDF URL (an arXiv paper works well). To produce an installable artifact:
 
 ```bash
 pnpm package           # -> artifacts/anchor_pdf_reader-<version>.zip (rename .xpi)
@@ -59,26 +49,19 @@ node scripts/browser-check.mjs [pdf]     # headless-browser end-to-end: overlays
 pnpm fixtures                         # regenerate test/fixtures/pdf/*.pdf
 ```
 
-`scripts/browser-check.mjs` serves `dist/` over localhost and drives the actual
-viewer in headless Chromium — it is the regression test for the two integration
-bugs that only reproduce in a real browser (pipeline start racing document
-load, and PDF link annotations stacking above the marker overlay).
+`scripts/browser-check.mjs` serves `dist/` over localhost and drives the actual viewer in headless Chromium — it is the regression test for the two integration bugs that only reproduce in a real browser (pipeline start racing document load, and PDF link annotations stacking above the marker overlay).
 
 ## Configuration
 
 The extension options page exposes:
 
-- **Contact email** — sent as the `mailto=` polite-pool parameter to OpenAlex
-  and Crossref (better rate limits; please set your own).
-- **Hover preview** — open cards after a 400 ms hover dwell instead of only on
-  click (off by default).
+- **Contact email** — sent as the `mailto=` polite-pool parameter to OpenAlex and Crossref (better rate limits; please set your own).
+- **Hover preview** — open cards after a 400 ms hover dwell instead of only on click (off by default).
 
 ## Permissions rationale
 
-- `<all_urls>` + `webRequest`/`webRequestBlocking` — intercept PDF navigations
-  and fetch the PDF bytes into the viewer.
-- `api.openalex.org`, `api.crossref.org`, `api.semanticscholar.org` — the only
-  metadata backends called.
+- `<all_urls>` + `webRequest`/`webRequestBlocking` — intercept PDF navigations and fetch the PDF bytes into the viewer.
+- `api.openalex.org`, `api.crossref.org`, `api.semanticscholar.org` — the only metadata backends called.
 - `storage` — settings and the citation-lookup cache.
 
 Firefox-only by design: Chrome's MV3 does not support blocking `webRequest`.
