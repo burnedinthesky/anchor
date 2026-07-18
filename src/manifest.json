@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Anchor PDF Reader",
+  "version": "0.1.0",
+  "description": "A Firefox PDF reader that shows interactive citation previews as you read.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "anchor-reader@datalab.to",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "permissions": [
+    "storage",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "https://api.openalex.org/*",
+    "https://api.crossref.org/*",
+    "https://api.semanticscholar.org/*"
+  ],
+  "background": {
+    "scripts": ["background/intercept.js"]
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "viewer/web/*",
+        "viewer/build/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
