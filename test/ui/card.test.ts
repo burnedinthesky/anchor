@@ -69,7 +69,7 @@ describe("PreviewCard states", () => {
         expect(root.querySelector(".sk-title")).not.toBeNull();
     });
 
-    it("success renders title link, authors +N more, metrics, related, versions, actions", () => {
+    it("success renders title link, authors +N more, metrics, versions, actions", () => {
         card.open(anchor);
         card.showRecord(makeRecord());
         const root = cardRoot();
@@ -88,8 +88,14 @@ describe("PreviewCard states", () => {
             "Cited by 142"
         );
 
-        const related = root.querySelectorAll("ul.list")[0]!;
-        expect(related.querySelectorAll("li").length).toBe(2);
+        // Related articles are hidden; the only list rendered is versions.
+        const sectionTitles = Array.from(
+            root.querySelectorAll(".section-title")
+        ).map((s) => s.textContent);
+        expect(sectionTitles).not.toContain("Related articles");
+        const lists = root.querySelectorAll("ul.list");
+        expect(lists.length).toBe(1);
+        expect(lists[0]!.querySelectorAll("li").length).toBe(2);
 
         const actionLinks = root.querySelectorAll(".actions a");
         const labels = Array.from(actionLinks).map((a) => a.textContent);

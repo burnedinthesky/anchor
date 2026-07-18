@@ -51,6 +51,15 @@ export class CitationController {
     private card: PreviewCard | null = null;
     /** Bumped on every open so stale async results are ignored. */
     private requestSeq = 0;
+    /** Pages whose overlay is currently mounted. */
+    private readonly mountedPages = new Set<number>();
+    /** A citation-link click swallowed while its page's overlay was pending. */
+    private pendingClick: {
+        page: number;
+        x: number;
+        y: number;
+        at: number;
+    } | null = null;
 
     constructor(opts: CitationControllerOptions) {
         this.opts = opts;
@@ -60,6 +69,7 @@ export class CitationController {
     /** Begin subscribing to events and fetching full text. Never throws. */
     async start(): Promise<void> {
         try {
+            this.installClickGuard();
             this.opts.onPageTextReady((e) => this.handlePage(e));
             const pages = await this.opts.getAllPagesText();
             const detector = this.opts.detectorFactory(pages);
@@ -88,9 +98,72 @@ export class CitationController {
 
     private renderPage(event: PageTextReadyEvent): void {
         try {
-            this.overlay?.renderPage(event);
+            const layer = this.overlay?.renderPage(event) ?? null;
+            this.mountedPages.add(event.pageNumber);
+            this.replayPendingClick(event.pageNumber, layer);
         } catch (err) {
             console.warn("[anchor] overlay render failed:", err);
+        }
+    }
+
+    /**
+     * First-click race guard. A page becomes clickable (with the PDF's own
+     * citation link annotations) before detection finishes and the overlay
+     * mounts — most visibly right after the document opens, while the
+     * full-document text fetch is still running. A click in that window used
+     * to activate the underlying `#cite.*` link and jump the reader to the
+     * bibliography. Capture such clicks, block the jump, and replay them
+     * against the marker buttons once the page's overlay mounts.
+     */
+    private installClickGuard(): void {
+        this.doc.addEventListener(
+            "click",
+            (ev) => this.guardCiteLinkClick(ev),
+            true
+        );
+    }
+
+    private guardCiteLinkClick(ev: MouseEvent): void {
+        const target = ev.target as Element | null;
+        const link = target?.closest?.(
+            'a[href*="#cite"], a[href*="#bib"]'
+        ) as HTMLAnchorElement | null;
+        if (!link) return;
+        const pageDiv = link.closest(".page");
+        const pageNumber = Number(
+            pageDiv?.getAttribute("data-page-number") ?? NaN
+        );
+        if (!Number.isFinite(pageNumber)) return;
+        // Overlay live: a click that still reached the link means no marker
+        // covers it (detection miss) — the PDF's own jump is the right
+        // fallback there.
+        if (this.mountedPages.has(pageNumber)) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.pendingClick = {
+            page: pageNumber,
+            x: ev.clientX,
+            y: ev.clientY,
+            at: Date.now(),
+        };
+    }
+
+    private replayPendingClick(page: number, layer: HTMLElement | null): void {
+        const pc = this.pendingClick;
+        if (!pc || pc.page !== page || !layer) return;
+        this.pendingClick = null;
+        if (Date.now() - pc.at > 5000) return; // stale; user moved on
+        for (const btn of layer.querySelectorAll<HTMLButtonElement>("button")) {
+            const r = btn.getBoundingClientRect();
+            if (
+                pc.x >= r.left &&
+                pc.x <= r.right &&
+                pc.y >= r.top &&
+                pc.y <= r.bottom
+            ) {
+                btn.click();
+                return;
+            }
         }
     }
 

@@ -19,7 +19,7 @@ Given a rendered PDF in the viewer:
 
 1. In-text citation markers (numeric `[12]`, `[3, 5–7]`, superscript `¹²`, and author–year `(Smith et al., 2021)`) are detected and rendered as clickable hit-targets overlaid on the text layer, with a hover affordance (underline/cursor change).
 2. Clicking a marker resolves it to a bibliography entry, resolves that entry to a canonical paper record via an external metadata API, and opens a preview card anchored near the click.
-3. The card shows: title, author list, year/venue, abstract, citation count, a "Related articles" list, a "Versions" list, an "Open PDF" action when an OA copy exists, and a "View on Google Scholar" link.
+3. The card shows: title, author list, year/venue, abstract, citation count, a "Versions" list, an "Open PDF" action when an OA copy exists, and a "View on Google Scholar" link.
 4. The card has explicit loading, success, partial (some fields missing), empty (unresolved), and error states.
 5. The reading position never changes as a side effect of any of the above; the card is an overlay, dismissed by outside-click / `Esc`.
 6. Repeated clicks on the same or already-resolved citation are served from cache (no duplicate network calls).
@@ -177,13 +177,13 @@ A fully or partially populated `PaperRecord` (see §8), tagged with which backen
 
 ### 7.2 Anchoring & layout
 
-- Anchor to the marker rect; prefer opening below-right, flip to stay within the viewport. Never cover the marker itself. Fixed width (default 360 px), max height with internal scroll.
+- Anchor to the marker rect; prefer opening below-right, flip to stay within the viewport. Never cover the marker itself. Fixed width (default 720 px), max height with internal scroll.
 - Rendered in a shadow-DOM overlay container so document CSS can't leak in and the card can't shift page layout (guarantees "don't lose your place").
 
 ### 7.3 States
 
 - **Loading:** skeleton with title placeholder; show as soon as click registers (< 16 ms), before network returns.
-- **Success:** title (link → Scholar deep link), author list (truncate with "+N more"), year · venue, abstract (clamped, "Show more"), a metrics row (`Cited by {n}`), "Related articles" (up to `MAX_RELATED`, each a Scholar deep link), "Versions" (count + list of hosts/links), actions row (`Open PDF` if OA, `View on Google Scholar`).
+- **Success:** title (link → Scholar deep link), author list (truncate with "+N more"), year · venue, abstract (clamped to 12 lines, "Show more"), a metrics row (`Cited by {n}`), "Versions" (count + list of hosts/links), actions row (`Open PDF` if OA, `View on Google Scholar`). ("Related articles" is still fetched into the record but hidden in the card.)
 - **Partial:** render what resolved; hide empty sections; show a subtle "some details unavailable" note.
 - **Empty (unresolved):** "Couldn't resolve this reference," with a `Search on Google Scholar` button using the raw reference text.
 - **Error:** network/timeout message with a `Retry` button.
@@ -199,7 +199,7 @@ A fully or partially populated `PaperRecord` (see §8), tagged with which backen
 
 ## 8. Data model (TypeScript)
 
-See `src/citations/types.ts` — the authoritative, slightly extended version of the spec's data model (adds `ViewportLike`, `PageTextReadyEvent`, `ordinals`, `DEFAULT_MAILTO`, `buildScholarUrl`). Config constants: `MAX_RELATED = 5`, `MAX_ABSTRACT_CHARS = 600`, `CACHE_TTL_DAYS = 30`, `HOVER_DWELL_MS = 400`, `CARD_WIDTH_PX = 360`.
+See `src/citations/types.ts` — the authoritative, slightly extended version of the spec's data model (adds `ViewportLike`, `PageTextReadyEvent`, `ordinals`, `DEFAULT_MAILTO`, `buildScholarUrl`). Config constants: `MAX_RELATED = 5`, `MAX_ABSTRACT_CHARS = 1200`, `CACHE_TTL_DAYS = 30`, `HOVER_DWELL_MS = 400`, `CARD_WIDTH_PX = 720`.
 
 ---
 
@@ -241,19 +241,19 @@ See `src/citations/types.ts` — the authoritative, slightly extended version of
 
 ## 11. Acceptance criteria (test matrix)
 
-| #   | Scenario                                      | Expected                                                                |
-| --- | --------------------------------------------- | ----------------------------------------------------------------------- |
-| 1   | Numeric PDF, click `[12]`                     | Card resolves to reference 12's paper; abstract + `Cited by` shown      |
-| 2   | Author–year PDF, click `(Smith et al., 2021)` | Resolves to matching bib entry; correct paper card                      |
-| 3   | Superscript numeric PDF                       | Superscript digits detected as markers; correct resolution              |
-| 4   | Reference with DOI                            | Exact OpenAlex hit; no title-search fallback triggered                  |
-| 5   | Reference without DOI                         | Crossref bibliographic → OpenAlex; card populated                       |
-| 6   | Related articles present                      | Up to 5 related items, each a working Scholar link, one batched request |
-| 7   | Versions present                              | Version count + list rendered                                           |
-| 8   | Second click on same citation                 | Served from cache; zero new network calls                               |
-| 9   | Offline / API 500                             | Error state with working Retry                                          |
-| 10  | Unresolvable reference                        | Empty state with "Search on Google Scholar"                             |
-| 11  | Any card open/close                           | Scroll position and page unchanged before/after                         |
-| 12  | HTTP 429                                      | Backoff + retry; no user-visible failure under transient limit          |
+| #   | Scenario                                      | Expected                                                                                    |
+| --- | --------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 1   | Numeric PDF, click `[12]`                     | Card resolves to reference 12's paper; abstract + `Cited by` shown                          |
+| 2   | Author–year PDF, click `(Smith et al., 2021)` | Resolves to matching bib entry; correct paper card                                          |
+| 3   | Superscript numeric PDF                       | Superscript digits detected as markers; correct resolution                                  |
+| 4   | Reference with DOI                            | Exact OpenAlex hit; no title-search fallback triggered                                      |
+| 5   | Reference without DOI                         | Crossref bibliographic → OpenAlex; card populated                                           |
+| 6   | Related articles fetched                      | Up to 5 related items resolved into the record via one batched request (hidden in the card) |
+| 7   | Versions present                              | Version count + list rendered                                                               |
+| 8   | Second click on same citation                 | Served from cache; zero new network calls                                                   |
+| 9   | Offline / API 500                             | Error state with working Retry                                                              |
+| 10  | Unresolvable reference                        | Empty state with "Search on Google Scholar"                                                 |
+| 11  | Any card open/close                           | Scroll position and page unchanged before/after                                             |
+| 12  | HTTP 429                                      | Backoff + retry; no user-visible failure under transient limit                              |
 
 Every stage has unit tests against fixtures; add integration fixtures for at least: an IEEE-style numeric paper, an ACM author–year paper, and a paper with superscript citations.

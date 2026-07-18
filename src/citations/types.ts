@@ -124,10 +124,10 @@ export interface MetadataProvider {
 // ---------------------------------------------------------------------------
 
 export const MAX_RELATED = 5;
-export const MAX_ABSTRACT_CHARS = 600;
+export const MAX_ABSTRACT_CHARS = 1200;
 export const CACHE_TTL_DAYS = 30;
 export const HOVER_DWELL_MS = 400;
-export const CARD_WIDTH_PX = 360;
+export const CARD_WIDTH_PX = 720;
 
 /** Default polite-pool contact; overridable in extension options. */
 export const DEFAULT_MAILTO = "andrew.kuo@datalab.to";

@@ -9,12 +9,7 @@
  * (restoring focus to the marker), the marker scrolling out of view, or another
  * card opening.
  */
-import {
-    CARD_WIDTH_PX,
-    MAX_RELATED,
-    buildScholarUrl,
-    type PaperRecord,
-} from "../types";
+import { CARD_WIDTH_PX, buildScholarUrl, type PaperRecord } from "../types";
 
 /** Gap between the marker and the card, and margin from the viewport edge. */
 const GAP_PX = 6;
@@ -104,7 +99,7 @@ const CARD_CSS = `
 .authors { margin: 0 0 8px; }
 .abstract { margin: 0 0 8px; white-space: pre-wrap; }
 .abstract.clamped {
-  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+  display: -webkit-box; -webkit-line-clamp: 12; -webkit-box-orient: vertical;
   overflow: hidden;
 }
 .toggle, .btn {
@@ -360,18 +355,6 @@ export class PreviewCard {
             const m = this.el("p", "metrics");
             m.textContent = `Cited by ${record.citationCount}`;
             this.card.appendChild(m);
-        }
-
-        // Related articles.
-        if (record.related.length) {
-            this.card.appendChild(this.sectionTitle("Related articles"));
-            const ul = this.el("ul", "list");
-            for (const r of record.related.slice(0, MAX_RELATED)) {
-                const li = this.doc.createElement("li");
-                li.appendChild(this.link(r.title, r.scholarUrl));
-                ul.appendChild(li);
-            }
-            this.card.appendChild(ul);
         }
 
         // Versions.

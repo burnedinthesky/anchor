@@ -169,17 +169,24 @@ export async function getAllPagesText(): Promise<PDFTextContent[]> {
     const app = window.PDFViewerApplication;
     const pdfDoc = app?.pdfDocument;
     if (!pdfDoc || typeof pdfDoc.numPages !== "number") return [];
-    const pages: PDFTextContent[] = [];
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-        try {
-            const page = await pdfDoc.getPage(i);
-            pages.push(sanitizeTextContent(await page.getTextContent()));
-        } catch (err) {
-            console.warn(`[anchor] getAllPagesText: page ${i} failed:`, err);
-            pages.push({ items: [] });
-        }
-    }
-    return pages;
+    // Fetch pages in parallel: every millisecond here is a window in which a
+    // rendered page is clickable without marker overlays (the pdf.js worker
+    // serializes internally, but avoiding round-trip latency per page still
+    // cuts multi-second startups on long documents).
+    return Promise.all(
+        Array.from({ length: pdfDoc.numPages }, async (_, i) => {
+            try {
+                const page = await pdfDoc.getPage(i + 1);
+                return sanitizeTextContent(await page.getTextContent());
+            } catch (err) {
+                console.warn(
+                    `[anchor] getAllPagesText: page ${i + 1} failed:`,
+                    err
+                );
+                return { items: [] };
+            }
+        })
+    );
 }
 
 // ---------------------------------------------------------------------------

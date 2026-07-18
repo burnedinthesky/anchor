@@ -108,8 +108,11 @@ export class OverlayManager {
         (this.doc.head ?? this.doc.documentElement).appendChild(style);
     }
 
-    /** Detect + render markers for one page, replacing any previous overlay. */
-    renderPage(event: PageTextReadyEvent): void {
+    /**
+     * Detect + render markers for one page, replacing any previous overlay.
+     * Returns the mounted layer (null when the page has no markers).
+     */
+    renderPage(event: PageTextReadyEvent): HTMLElement | null {
         const { pageNumber, textContent, textLayerDiv, viewport } = event;
         this.clearPage(pageNumber, textLayerDiv);
 
@@ -121,10 +124,10 @@ export class OverlayManager {
                 `[anchor] detection failed for page ${pageNumber}:`,
                 err
             );
-            return;
+            return null;
         }
 
-        if (markers.length === 0) return;
+        if (markers.length === 0) return null;
 
         const layer = this.doc.createElement("div");
         layer.className = LAYER_CLASS;
@@ -139,6 +142,7 @@ export class OverlayManager {
         // itself when it is detached (unit tests, unusual embeddings).
         (textLayerDiv.parentElement ?? textLayerDiv).appendChild(layer);
         this.pageLayers.set(pageNumber, layer);
+        return layer;
     }
 
     private clearPage(pageNumber: number, textLayerDiv: HTMLElement): void {

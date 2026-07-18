@@ -125,6 +125,51 @@ describe("CitationController wiring", () => {
         );
     });
 
+    it("blocks first-click cite-link jumps while the overlay is pending, then replays the click (regression)", async () => {
+        const h = harness();
+
+        // The PDF's own citation link annotation, clickable before overlays.
+        const annotationLayer = document.createElement("div");
+        annotationLayer.className = "annotationLayer";
+        const link = document.createElement("a");
+        link.setAttribute("href", "#cite.smith2021");
+        annotationLayer.appendChild(link);
+        h.page.className = "page";
+        h.page.setAttribute("data-page-number", "1");
+        h.page.appendChild(annotationLayer);
+
+        const startP = h.controller.start(); // pages not resolved yet
+
+        // First click: hits the raw link. Must be swallowed, not jump.
+        const ev = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            clientX: 0,
+            clientY: 0,
+        });
+        link.dispatchEvent(ev);
+        expect(ev.defaultPrevented).toBe(true);
+
+        // Overlay mounts; the swallowed click replays onto the marker button
+        // (jsdom rects are all 0x0 at the origin, containing point (0,0)).
+        h.resolvePages();
+        await startP;
+        h.emit(makeEvent(1, h.div));
+        await flush();
+        expect(cardHost()).not.toBeNull();
+
+        // With the overlay mounted, an unclaimed cite-link click passes
+        // through (detection miss -> the PDF's own jump is the fallback).
+        const ev2 = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            clientX: 500,
+            clientY: 500,
+        });
+        link.dispatchEvent(ev2);
+        expect(ev2.defaultPrevented).toBe(false);
+    });
+
     it("click -> loading then success", async () => {
         const h = harness();
         const startP = h.controller.start();
