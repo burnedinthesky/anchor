@@ -36,6 +36,11 @@ interface PDFPageProxy {
   getTextContent(): Promise<PDFTextContent>;
 }
 
+interface PDFDocumentProxy {
+  numPages: number;
+  getPage(pageNumber: number): Promise<PDFPageProxy>;
+}
+
 /** The `source` of a `textlayerrendered` event is the PDFPageView. */
 interface PDFPageView {
   /** 1-based page number (pdf.js `PDFPageView#id`). */
@@ -57,6 +62,7 @@ interface TextLayerRenderedEvent {
 interface PDFViewerApplication {
   initializedPromise: Promise<void>;
   eventBus: EventBus;
+  pdfDocument?: PDFDocumentProxy | null;
   pdfViewer?: { container?: HTMLElement; viewer?: HTMLElement } | null;
   appConfig?: { appContainer?: HTMLElement } | null;
 }
@@ -135,6 +141,43 @@ export function getViewerContainer(): HTMLElement {
 }
 
 // ---------------------------------------------------------------------------
+// Full-document text access (for Agent D's controller)
+// ---------------------------------------------------------------------------
+
+/** Keep only real TextItems (drop any TextMarkedContent), matching event shape. */
+function sanitizeTextContent(tc: PDFTextContent): PDFTextContent {
+  if (!tc?.items) return { items: [] };
+  return {
+    items: tc.items.filter(
+      (it): it is (typeof tc.items)[number] =>
+        typeof (it as { str?: unknown }).str === "string"
+    ),
+  };
+}
+
+/**
+ * Fetch every page's text content once, in document order (index 0 = page 1).
+ * References live at the end of the document, so Stages 1–2 need all pages up
+ * front. Resolves to `[]` if the document is unavailable. Never throws.
+ */
+export async function getAllPagesText(): Promise<PDFTextContent[]> {
+  const app = window.PDFViewerApplication;
+  const pdfDoc = app?.pdfDocument;
+  if (!pdfDoc || typeof pdfDoc.numPages !== "number") return [];
+  const pages: PDFTextContent[] = [];
+  for (let i = 1; i <= pdfDoc.numPages; i++) {
+    try {
+      const page = await pdfDoc.getPage(i);
+      pages.push(sanitizeTextContent(await page.getTextContent()));
+    } catch (err) {
+      console.warn(`[anchor] getAllPagesText: page ${i} failed:`, err);
+      pages.push({ items: [] });
+    }
+  }
+  return pages;
+}
+
+// ---------------------------------------------------------------------------
 // Wiring
 // ---------------------------------------------------------------------------
 
@@ -187,6 +230,37 @@ async function main(): Promise<void> {
   app.eventBus.on("textlayerrendered", (evt) => {
     void handleTextLayerRendered(evt);
   });
+  void startCitationPipeline();
+}
+
+/**
+ * Construct and start the Stage 4 controller with the real detector, resolver,
+ * metadata provider, and settings. Isolated in a try/catch so any failure
+ * disables the feature quietly instead of breaking the viewer.
+ */
+async function startCitationPipeline(): Promise<void> {
+  try {
+    const [{ DocumentCitationDetector }, { BibliographyResolver }, { createMetadataProvider }, { CitationController }, { getSettings }] =
+      await Promise.all([
+        import("../citations/detect"),
+        import("../citations/resolve"),
+        import("../citations/metadata"),
+        import("../citations/ui/controller"),
+        import("../options/settings"),
+      ]);
+    const settings = await getSettings();
+    const controller = new CitationController({
+      getAllPagesText,
+      onPageTextReady,
+      detectorFactory: (pages) => new DocumentCitationDetector(pages),
+      resolverFactory: (pages) => new BibliographyResolver(pages),
+      provider: createMetadataProvider({ mailto: settings.mailto }),
+      hoverPreview: settings.hoverPreview,
+    });
+    await controller.start();
+  } catch (err) {
+    console.warn("[anchor] citation pipeline failed to start:", err);
+  }
 }
 
 void main();
