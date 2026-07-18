@@ -1,0 +1,5 @@
+allowBuilds:
+    # esbuild's install script places its platform binary.
+    esbuild: true
+    # Legacy transitive dep (web-ext tree); works without its build script.
+    spawn-sync: false

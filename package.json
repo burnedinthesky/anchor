@@ -13,9 +13,10 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "lint:ext": "web-ext lint --source-dir dist",
-        "package": "npm run build && web-ext build --source-dir dist --artifacts-dir artifacts --overwrite-dest",
+        "package": "pnpm run build && web-ext build --source-dir dist --artifacts-dir artifacts --overwrite-dest",
         "fixtures": "tsx scripts/make-fixtures.ts"
     },
+    "packageManager": "pnpm@11.9.0",
     "dependencies": {
         "pdfjs-dist": "^5.0.0"
     },
@@ -25,6 +26,7 @@
         "esbuild": "^0.25.0",
         "eslint": "^9.39.5",
         "eslint-config-prettier": "^10.1.8",
+        "globals": "^17.7.0",
         "jsdom": "^26.0.0",
         "pdf-lib": "^1.17.1",
         "playwright": "^1.61.1",

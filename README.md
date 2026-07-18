@@ -28,35 +28,35 @@ not fetched). The full behavioral spec lives in [`docs/SPEC.md`](docs/SPEC.md).
 ## Building and running
 
 ```bash
-npm install
-npm run build          # bundles the extension into dist/
-npx web-ext run --source-dir dist   # launches Firefox with the extension loaded
+pnpm install
+pnpm build             # bundles the extension into dist/
+pnpm exec web-ext run --source-dir dist   # launches Firefox with the extension loaded
 ```
 
 Then open any PDF URL (an arXiv paper works well). To produce an installable
 artifact:
 
 ```bash
-npm run package        # -> artifacts/anchor_pdf_reader-<version>.zip (rename .xpi)
+pnpm package           # -> artifacts/anchor_pdf_reader-<version>.zip (rename .xpi)
 ```
 
 ## Development
 
 ```bash
-npm test               # vitest unit suite (all four stages + UI, jsdom)
-npm run typecheck      # tsc --noEmit
-npm run lint           # eslint
-npm run format         # prettier --write
-npm run lint:ext       # web-ext lint over the built dist/
+pnpm test              # vitest unit suite (all four stages + UI, jsdom)
+pnpm typecheck         # tsc --noEmit
+pnpm lint              # eslint
+pnpm format            # prettier --write
+pnpm lint:ext          # web-ext lint over the built dist/
 ```
 
 Deeper verification scripts (run on demand):
 
 ```bash
-npx tsx scripts/e2e-fixture-check.ts     # real pdf.js over generated fixture PDFs -> detect -> resolve
-npx tsx scripts/live-smoke.ts            # metadata chain against the real APIs (network!)
+pnpm exec tsx scripts/e2e-fixture-check.ts     # real pdf.js over generated fixture PDFs -> detect -> resolve
+pnpm exec tsx scripts/live-smoke.ts            # metadata chain against the real APIs (network!)
 node scripts/browser-check.mjs [pdf]     # headless-browser end-to-end: overlays, stacking, card, scroll invariance
-npm run fixtures                         # regenerate test/fixtures/pdf/*.pdf
+pnpm fixtures                         # regenerate test/fixtures/pdf/*.pdf
 ```
 
 `scripts/browser-check.mjs` serves `dist/` over localhost and drives the actual
