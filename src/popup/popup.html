@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Anchor — Sites</title>
+        <style>
+            :root {
+                color-scheme: light dark;
+                --fg: #1a1a1a;
+                --muted: #6b6b6b;
+                --line: #e2e2e2;
+                --surface: #f6f6f7;
+                --accent: #2f5cff;
+                --accent-fg: #ffffff;
+                --danger: #b3261e;
+                --on: #2e7d32;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    sans-serif;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --fg: #ececec;
+                    --muted: #9a9a9a;
+                    --line: #333438;
+                    --surface: #1e1f22;
+                    --accent: #6f8cff;
+                    --accent-fg: #0b0c0f;
+                    --danger: #ff6b61;
+                    --on: #7bc67e;
+                }
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                width: 340px;
+                margin: 0;
+                padding: 14px 16px 16px;
+                color: var(--fg);
+                font-size: 13px;
+                line-height: 1.45;
+            }
+            header {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+            h1 {
+                font-size: 14px;
+                font-weight: 650;
+                margin: 0;
+            }
+            .tagline {
+                color: var(--muted);
+                font-size: 11px;
+            }
+
+            /* Current-site card */
+            .current {
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                padding: 10px 12px;
+                margin-bottom: 14px;
+                background: var(--surface);
+            }
+            .current .host {
+                font-weight: 600;
+                word-break: break-all;
+            }
+            .current .none {
+                color: var(--muted);
+            }
+            .current-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .status {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+            .status.on {
+                color: var(--on);
+            }
+            button {
+                font: inherit;
+                cursor: pointer;
+                border-radius: 7px;
+                border: 1px solid var(--line);
+                background: transparent;
+                color: var(--fg);
+                padding: 5px 11px;
+                white-space: nowrap;
+            }
+            button:hover:not(:disabled) {
+                border-color: var(--accent);
+            }
+            button:disabled {
+                opacity: 0.5;
+                cursor: default;
+            }
+            button.primary {
+                background: var(--accent);
+                color: var(--accent-fg);
+                border-color: var(--accent);
+                font-weight: 600;
+            }
+
+            /* Site list */
+            .section-label {
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: var(--muted);
+                margin: 0 0 6px;
+            }
+            ul {
+                list-style: none;
+                margin: 0 0 12px;
+                padding: 0;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            li {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                padding: 8px 12px;
+                border-top: 1px solid var(--line);
+            }
+            li:first-child {
+                border-top: none;
+            }
+            li .name {
+                word-break: break-all;
+            }
+            .empty {
+                padding: 12px;
+                color: var(--muted);
+                text-align: center;
+            }
+            .remove {
+                border: none;
+                padding: 2px 6px;
+                color: var(--muted);
+                font-size: 15px;
+                line-height: 1;
+            }
+            .remove:hover {
+                color: var(--danger);
+                border: none;
+            }
+
+            /* Add row */
+            form.add {
+                display: flex;
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+            input[type="text"] {
+                flex: 1;
+                min-width: 0;
+                font: inherit;
+                padding: 6px 9px;
+                border: 1px solid var(--line);
+                border-radius: 7px;
+                background: transparent;
+                color: var(--fg);
+            }
+            input[type="text"]:focus {
+                outline: 2px solid var(--accent);
+                outline-offset: -1px;
+                border-color: transparent;
+            }
+
+            footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-top: 1px solid var(--line);
+                padding-top: 10px;
+            }
+            .hint {
+                color: var(--muted);
+                font-size: 11px;
+            }
+            a.settings {
+                color: var(--accent);
+                text-decoration: none;
+                font-size: 12px;
+            }
+            a.settings:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Anchor</h1>
+            <span class="tagline">Open PDFs in the citation reader</span>
+        </header>
+
+        <div class="current">
+            <div class="current-row">
+                <div>
+                    <div id="current-host" class="host">…</div>
+                    <div id="current-status" class="status"></div>
+                </div>
+                <button id="current-toggle" type="button" hidden></button>
+            </div>
+        </div>
+
+        <p class="section-label">Sites Anchor opens</p>
+        <ul id="site-list"></ul>
+
+        <form class="add" id="add-form">
+            <input
+                type="text"
+                id="add-input"
+                placeholder="add a site, e.g. openreview.net"
+                autocomplete="off"
+                spellcheck="false"
+            />
+            <button type="submit" class="primary">Add</button>
+        </form>
+
+        <footer>
+            <span class="hint">Subdomains included automatically.</span>
+            <a href="#" id="open-options" class="settings">More settings →</a>
+        </footer>
+
+        <script src="popup.js" type="module"></script>
+    </body>
+</html>

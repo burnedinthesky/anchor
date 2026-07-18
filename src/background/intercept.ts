@@ -10,8 +10,39 @@
  *   2. onHeadersReceived  — response `Content-Type: application/pdf`
  *                           and not an `attachment` download   (covers extensionless URLs)
  *
+ * Both hooks only fire on hosts the user has enabled (configured from the
+ * toolbar popup; defaults to arxiv.org only). The enabled-site list is cached
+ * in memory because blocking webRequest listeners must decide synchronously.
+ *
  * Redirect target: viewer/web/viewer.html?file=<encodeURIComponent(originalUrl)>
  */
+import {
+    DEFAULT_SETTINGS,
+    STORAGE_KEY,
+    getSettings,
+    hostMatchesSites,
+    normalizeSites,
+    type Settings,
+} from "../options/settings";
+
+/**
+ * In-memory copy of the enabled-site allowlist. Seeded with the defaults so
+ * the very first requests (before `getSettings` resolves) still behave, then
+ * refreshed from storage and kept live via `storage.onChanged`.
+ */
+let enabledSites: string[] = [...DEFAULT_SETTINGS.enabledSites];
+
+void getSettings().then((s) => {
+    enabledSites = s.enabledSites;
+});
+
+browser.storage.onChanged.addListener((changes, area) => {
+    if (area !== "local" || !changes[STORAGE_KEY]) return;
+    const next = changes[STORAGE_KEY].newValue as Partial<Settings> | undefined;
+    enabledSites = Array.isArray(next?.enabledSites)
+        ? normalizeSites(next.enabledSites)
+        : [...DEFAULT_SETTINGS.enabledSites];
+});
 
 /** Absolute moz-extension:// URL of the bundled viewer page. */
 const VIEWER_PAGE = browser.runtime.getURL("viewer/web/viewer.html");
@@ -49,7 +80,12 @@ function pathLooksLikePdf(url: string): boolean {
 browser.webRequest.onBeforeRequest.addListener(
     (details): browser.webRequest.BlockingResponse | undefined => {
         const { url } = details;
-        if (isOwnRequest(url) || !isHttp(url) || !pathLooksLikePdf(url)) {
+        if (
+            isOwnRequest(url) ||
+            !isHttp(url) ||
+            !hostMatchesSites(url, enabledSites) ||
+            !pathLooksLikePdf(url)
+        ) {
             return undefined;
         }
         return { redirectUrl: toViewerUrl(url) };
@@ -62,7 +98,11 @@ browser.webRequest.onBeforeRequest.addListener(
 browser.webRequest.onHeadersReceived.addListener(
     (details): browser.webRequest.BlockingResponse | undefined => {
         const { url } = details;
-        if (isOwnRequest(url) || !isHttp(url)) {
+        if (
+            isOwnRequest(url) ||
+            !isHttp(url) ||
+            !hostMatchesSites(url, enabledSites)
+        ) {
             return undefined;
         }
 

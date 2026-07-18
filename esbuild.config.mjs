@@ -14,6 +14,7 @@ const entryPoints = [
     // Bundled next to the vendored viewer so viewer.html can load ./bootstrap.js.
     { in: "src/viewer/bootstrap.ts", out: "viewer/web/bootstrap" },
     { in: "src/options/options.ts", out: "options/options" },
+    { in: "src/popup/popup.ts", out: "popup/popup" },
 ].filter((e) => existsSync(e.in));
 
 await esbuild.build({
@@ -34,6 +35,7 @@ await esbuild.build({
 const staticCopies = [
     ["src/manifest.json", `${outdir}/manifest.json`],
     ["src/options/options.html", `${outdir}/options/options.html`],
+    ["src/popup/popup.html", `${outdir}/popup/popup.html`],
     ["vendor/pdfjs", `${outdir}/viewer`],
 ];
 for (const [from, to] of staticCopies) {

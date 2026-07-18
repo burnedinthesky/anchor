@@ -5,7 +5,7 @@ citation previews**: click an in-text citation like `[12]` or `(Smith et al., 20
 
 ## How it works
 
-PDF navigations are intercepted by a blocking `webRequest` handler and redirected to the extension's viewer page (a vendored pdf.js generic viewer). Inside the viewer, a four-stage pipeline runs:
+PDF navigations are intercepted by a blocking `webRequest` handler and redirected to the extension's viewer page (a vendored pdf.js generic viewer). Interception only happens on sites you've enabled — the allowlist defaults to `arxiv.org` and is edited from the toolbar popup (click the Anchor icon): the popup offers a one-click toggle for the current site plus a free-form list you can add hosts to or remove them from. A listed host also covers its subdomains (`arxiv.org` → `export.arxiv.org`). Everywhere else, PDFs open in Firefox's own viewer untouched. The allowlist lives in `browser.storage.local` (see `src/options/settings.ts`) and the background interceptor picks up changes live. Inside the viewer, a four-stage pipeline runs:
 
 | Stage      | What it does                                                                                                                                                                                   | Where                     |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |

@@ -21,7 +21,12 @@ import firefox from "selenium-webdriver/firefox.js";
 
 const pdfPath = resolve(process.argv[2] ?? "test/fixtures/pdf/numeric.pdf");
 const grantHostPermissions = process.env.GRANT !== "0";
-const xpi = "artifacts/anchor_pdf_reader-0.2.7.zip";
+// Interception is now gated on an enabled-site allowlist (defaults to arxiv.org
+// only). Pin the extension's internal UUID so we can open an extension page and
+// add this harness's localhost host to the allowlist before navigating.
+const EXT_ID = "anchor-reader@datalab.to";
+const EXT_UUID = "a11c0de0-2e2e-4a2a-8b2b-abcdef012345";
+const xpi = "artifacts/anchor_pdf_reader-0.3.0.zip";
 if (!existsSync(xpi)) {
     console.log("building package first...");
     execSync("pnpm package", { stdio: "ignore" });
@@ -57,6 +62,12 @@ const options = new firefox.Options()
     .setPreference(
         "extensions.originControls.grantByDefault",
         grantHostPermissions
+    )
+    // Pin the internal moz-extension UUID so we can reach an extension page to
+    // seed the enabled-site allowlist below.
+    .setPreference(
+        "extensions.webextensions.uuids",
+        JSON.stringify({ [EXT_ID]: EXT_UUID })
     );
 
 const driver = await new Builder()
@@ -69,6 +80,18 @@ try {
     console.log(
         `installed temporary add-on; host permissions granted: ${grantHostPermissions}`
     );
+
+    // Enable interception for this harness's localhost host (default allowlist
+    // is arxiv.org only). The background picks the change up via storage.onChanged.
+    await driver.get(`moz-extension://${EXT_UUID}/options/options.html`);
+    const seeded = await driver.executeAsyncScript(`
+        const done = arguments[arguments.length - 1];
+        browser.storage.local
+            .set({ settings: { enabledSites: ["127.0.0.1", "localhost", "arxiv.org"] } })
+            .then(() => done("ok"))
+            .catch((e) => done("ERR " + e.message));
+    `);
+    check(seeded === "ok", `allowlist seeded with 127.0.0.1 (${seeded})`);
 
     await driver.get(pdfUrl);
     // The blocking webRequest listener should redirect to the viewer.

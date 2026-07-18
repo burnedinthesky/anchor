@@ -27,7 +27,11 @@ async function load(): Promise<void> {
 }
 
 async function persist(): Promise<void> {
+    // Preserve fields this page doesn't edit (e.g. the enabledSites allowlist,
+    // owned by the toolbar popup).
+    const current = await getSettings();
     const next: Settings = {
+        ...current,
         mailto: mailtoInput.value.trim(),
         hoverPreview: hoverInput.checked,
     };

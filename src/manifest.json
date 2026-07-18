@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Anchor PDF Reader",
-    "version": "0.2.7",
+    "version": "0.3.0",
     "description": "A Firefox PDF reader that shows interactive citation previews as you read.",
     "browser_specific_settings": {
         "gecko": {
@@ -12,7 +12,7 @@
             }
         }
     },
-    "permissions": ["storage", "webRequest", "webRequestBlocking"],
+    "permissions": ["storage", "webRequest", "webRequestBlocking", "activeTab"],
     "host_permissions": [
         "<all_urls>",
         "https://api.openalex.org/*",
@@ -21,6 +21,10 @@
     ],
     "background": {
         "scripts": ["background/intercept.js"]
+    },
+    "action": {
+        "default_title": "Anchor — choose sites",
+        "default_popup": "popup/popup.html"
     },
     "options_ui": {
         "page": "options/options.html",
