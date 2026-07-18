@@ -1,0 +1,28 @@
+{
+  "name": "anchor",
+  "version": "0.1.0",
+  "description": "Firefox PDF reader extension with interactive citation previews",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint:ext": "web-ext lint --source-dir dist",
+    "package": "npm run build && web-ext build --source-dir dist --artifacts-dir artifacts --overwrite-dest",
+    "fixtures": "tsx scripts/make-fixtures.ts"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/firefox-webext-browser": "^120.0.0",
+    "esbuild": "^0.25.0",
+    "jsdom": "^26.0.0",
+    "pdf-lib": "^1.17.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0",
+    "web-ext": "^8.0.0"
+  }
+}

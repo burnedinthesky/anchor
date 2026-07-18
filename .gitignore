@@ -1,0 +1,6 @@
+node_modules/
+dist/
+artifacts/
+coverage/
+*.xpi
+.DS_Store
