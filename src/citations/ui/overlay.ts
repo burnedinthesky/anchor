@@ -24,6 +24,8 @@ import {
 const STYLE_ID = "anchor-cite-overlay-style";
 const BTN_CLASS = "anchor-cite-btn";
 const LAYER_CLASS = "anchor-cite-layer";
+/** Extra clickable padding around every marker rect. */
+const HITBOX_PAD_PX = 2;
 
 const OVERLAY_CSS = `
 .${LAYER_CLASS} {
@@ -132,9 +134,15 @@ export class OverlayManager {
         const layer = this.doc.createElement("div");
         layer.className = LAYER_CLASS;
         layer.dataset.page = String(pageNumber);
+        const pageEl = textLayerDiv.parentElement;
         for (const group of groupById(markers).values()) {
             for (const marker of group) {
-                layer.appendChild(this.createButton(marker, group));
+                const rect = this.effectiveRect(
+                    marker.rect,
+                    pageEl,
+                    textLayerDiv
+                );
+                layer.appendChild(this.createButton(marker, group, rect));
             }
         }
         // Sibling of (and DOM-after) pdf.js's text/annotation layers so it paints
@@ -158,16 +166,83 @@ export class OverlayManager {
             .forEach((n) => n.remove());
     }
 
+    /**
+     * The button's final rect: the marker's glyph rect, expanded to fully
+     * cover any intersecting internal-link annotation, plus a small pad.
+     *
+     * The PDF's own citation links (`.annotationLayer a[href^="#"]`) are
+     * padded boxes, typically a few px taller and wider than the glyphs.
+     * A button that covers only the glyphs leaves a strip where clicks fall
+     * through to the link (jumping to the bibliography) and where the link's
+     * own :hover style washes out the line — so wherever we overlap a link at
+     * all, we must eclipse it completely.
+     */
+    private effectiveRect(
+        rect: CitationMarker["rect"],
+        pageEl: HTMLElement | null,
+        textLayerDiv: HTMLElement
+    ): CitationMarker["rect"] {
+        const baseRight = rect.x + rect.w;
+        const baseBottom = rect.y + rect.h;
+        let { x, y } = rect;
+        let right = baseRight;
+        let bottom = baseBottom;
+
+        if (pageEl) {
+            // Origin for client->local conversion: the text layer, NOT the
+            // page element — pdf.js gives .page a transparent border, and
+            // absolutely-positioned layers (ours and the text layer) originate
+            // at the padding box inside it.
+            const originRect = textLayerDiv.getBoundingClientRect();
+            for (const a of pageEl.querySelectorAll<HTMLAnchorElement>(
+                '.annotationLayer a[href^="#"]'
+            )) {
+                const ar = a.getBoundingClientRect();
+                if (ar.width <= 0 || ar.height <= 0) continue;
+                // Skip non-text-line links (large destination boxes).
+                if (ar.height > rect.h * 2.5 + 8) continue;
+                const lx = ar.left - originRect.left;
+                const ly = ar.top - originRect.top;
+                const lr = lx + ar.width;
+                const lb = ly + ar.height;
+                // Overlap is measured against the ORIGINAL glyph rect — using
+                // the growing union would cascade down a multi-cite line,
+                // swallowing the neighbors' links (wrong-target clicks). And
+                // it must be a substantial share of the link box: adjacent
+                // cites brush each other's links by a sliver, which is not
+                // ownership.
+                const overlapX = Math.min(baseRight, lr) - Math.max(rect.x, lx);
+                const overlapY =
+                    Math.min(baseBottom, lb) - Math.max(rect.y, ly);
+                if (overlapX <= 0 || overlapY <= 0) continue;
+                const anchorArea = ar.width * ar.height;
+                if (overlapX * overlapY < anchorArea * 0.25) continue;
+                x = Math.min(x, lx);
+                y = Math.min(y, ly);
+                right = Math.max(right, lr);
+                bottom = Math.max(bottom, lb);
+            }
+        }
+
+        return {
+            x: x - HITBOX_PAD_PX,
+            y: y - HITBOX_PAD_PX,
+            w: right - x + 2 * HITBOX_PAD_PX,
+            h: bottom - y + 2 * HITBOX_PAD_PX,
+        };
+    }
+
     private createButton(
         marker: CitationMarker,
-        group: CitationMarker[]
+        group: CitationMarker[],
+        rect: CitationMarker["rect"]
     ): HTMLButtonElement {
         const btn = this.doc.createElement("button");
         btn.type = "button";
         btn.className = BTN_CLASS;
         btn.setAttribute("aria-label", markerLabel(marker));
         btn.dataset.markerId = marker.id;
-        const { x, y, w, h } = marker.rect;
+        const { x, y, w, h } = rect;
         btn.style.left = `${x}px`;
         btn.style.top = `${y}px`;
         btn.style.width = `${w}px`;

@@ -75,6 +75,44 @@ const btnCount = await page.locator(".anchor-cite-btn").count();
 check(btnCount > 0, `marker buttons rendered (${btnCount})`);
 
 if (btnCount > 0) {
+    // Hitbox coverage: any PDF cite-link annotation a button overlaps must be
+    // fully eclipsed by it (else clicks near its edges jump to the bib and its
+    // :hover style washes out the text line). Untouched links = detection
+    // misses, which are allowed to keep working as normal PDF links.
+    await page.waitForTimeout(1200); // let annotation layers land + re-render
+    const partial = await page.evaluate(() => {
+        const btns = [...document.querySelectorAll(".anchor-cite-btn")].map(
+            (b) => b.getBoundingClientRect()
+        );
+        const bad = [];
+        for (const a of document.querySelectorAll(
+            '.annotationLayer a[href*="#cite"], .annotationLayer a[href*="#bib"]'
+        )) {
+            const ar = a.getBoundingClientRect();
+            if (ar.width <= 0) continue;
+            const overlapping = btns.filter(
+                (r) =>
+                    Math.min(ar.right, r.right) - Math.max(ar.left, r.left) >
+                        0 &&
+                    Math.min(ar.bottom, r.bottom) - Math.max(ar.top, r.top) > 0
+            );
+            if (overlapping.length === 0) continue; // detection miss: allowed
+            const covered = overlapping.some(
+                (r) =>
+                    r.left <= ar.left + 0.5 &&
+                    r.right >= ar.right - 0.5 &&
+                    r.top <= ar.top + 0.5 &&
+                    r.bottom >= ar.bottom - 0.5
+            );
+            if (!covered) bad.push(a.getAttribute("href"));
+        }
+        return bad.slice(0, 5);
+    });
+    check(
+        partial.length === 0,
+        `no cite-link annotation is partially covered (bad: ${partial.join(", ") || "none"})`
+    );
+
     // Pick the first visible marker button and ask the browser what element is
     // actually hit-tested at its center — this is the stacking-order truth.
     const btn = page.locator(".anchor-cite-btn").first();

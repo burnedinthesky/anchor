@@ -21,7 +21,7 @@ import firefox from "selenium-webdriver/firefox.js";
 
 const pdfPath = resolve(process.argv[2] ?? "test/fixtures/pdf/numeric.pdf");
 const grantHostPermissions = process.env.GRANT !== "0";
-const xpi = "artifacts/anchor_pdf_reader-0.2.3.zip";
+const xpi = "artifacts/anchor_pdf_reader-0.2.5.zip";
 if (!existsSync(xpi)) {
     console.log("building package first...");
     execSync("pnpm package", { stdio: "ignore" });

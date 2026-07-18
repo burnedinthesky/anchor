@@ -126,9 +126,9 @@ describe("PreviewCard states", () => {
         vi.spyOn(card as never, "isOverflowing").mockReturnValue(false);
         card.showRecord(makeRecord());
         const root = cardRoot();
-        expect(root.querySelector(".abstract")!.classList.contains("clamped")).toBe(
-            false
-        );
+        expect(
+            root.querySelector(".abstract")!.classList.contains("clamped")
+        ).toBe(false);
         expect(root.querySelector(".toggle")).toBeNull();
     });
 

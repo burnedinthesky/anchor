@@ -5,7 +5,7 @@ import type {
     CitationDetector,
     CitationMarker,
 } from "../../src/citations/types";
-import { makeMarker, makeEvent, makePageDom } from "./helpers";
+import { makeMarker, makeEvent, makePageDom, rect } from "./helpers";
 
 function detectorReturning(markers: CitationMarker[]): CitationDetector {
     return { detect: () => markers };
@@ -52,10 +52,11 @@ describe("OverlayManager", () => {
             "button.anchor-cite-btn"
         ) as HTMLButtonElement;
         expect(btn).not.toBeNull();
-        expect(btn.style.left).toBe("50px");
-        expect(btn.style.top).toBe("60px");
-        expect(btn.style.width).toBe("22px");
-        expect(btn.style.height).toBe("14px");
+        // Marker rect (50,60,22,14) plus the 2px hitbox pad on every side.
+        expect(btn.style.left).toBe("48px");
+        expect(btn.style.top).toBe("58px");
+        expect(btn.style.width).toBe("26px");
+        expect(btn.style.height).toBe("18px");
         expect(btn.getAttribute("aria-label")).toBe("Citation 12");
     });
 
@@ -83,6 +84,43 @@ describe("OverlayManager", () => {
             order.indexOf(annotationLayer)
         );
         expect(layer.querySelector("button.anchor-cite-btn")).not.toBeNull();
+    });
+
+    it("expands buttons to eclipse intersecting PDF link annotations, plus padding (regression)", () => {
+        // The PDF's cite-link boxes are padded beyond the glyph rect; an
+        // uncovered strip lets clicks fall through (jump to bibliography) and
+        // lets the link's own :hover wash out the text line.
+        page.getBoundingClientRect = () => rect(0, 0, 800, 1000);
+        const annotationLayer = document.createElement("div");
+        annotationLayer.className = "annotationLayer";
+        const link = document.createElement("a");
+        link.setAttribute("href", "#cite.smith2021");
+        link.getBoundingClientRect = () => rect(48, 58, 30, 18); // taller + wider than marker
+        annotationLayer.appendChild(link);
+        // A non-overlapping link elsewhere must not distort the button.
+        const far = document.createElement("a");
+        far.setAttribute("href", "#cite.other");
+        far.getBoundingClientRect = () => rect(400, 400, 30, 18);
+        annotationLayer.appendChild(far);
+        page.appendChild(annotationLayer);
+
+        const overlay = new OverlayManager({
+            detector: detectorReturning([
+                makeMarker({ rect: { x: 50, y: 60, w: 22, h: 14 } }),
+            ]),
+            onActivate: vi.fn(),
+        });
+        overlay.renderPage(makeEvent(1, div));
+
+        const btn = page.querySelector(
+            "button.anchor-cite-btn"
+        ) as HTMLButtonElement;
+        // Union of marker (50,60,22,14) and link (48,58,30,18) = (48,58,30,18),
+        // then 2px pad on every side.
+        expect(btn.style.left).toBe("46px");
+        expect(btn.style.top).toBe("56px");
+        expect(btn.style.width).toBe("34px");
+        expect(btn.style.height).toBe("22px");
     });
 
     it("does not duplicate buttons when a page re-emits (zoom re-render)", () => {

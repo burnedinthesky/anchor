@@ -249,6 +249,16 @@ async function main(): Promise<void> {
         void handleTextLayerRendered(evt);
     });
 
+    // Annotation layers (the PDF's own link boxes) often render AFTER the
+    // text layer. The overlay sizes its buttons to eclipse those link boxes,
+    // so replay the page event once they exist to re-render with them.
+    app.eventBus.on("annotationlayerrendered", (evt) => {
+        const pageNumber = (evt as { pageNumber?: number }).pageNumber;
+        if (typeof pageNumber !== "number") return;
+        const cached = emittedByPage.get(pageNumber);
+        if (cached) emit(cached);
+    });
+
     // The document loads asynchronously AFTER app init — pdfDocument is null
     // until the eventBus fires "documentloaded". Starting the pipeline earlier
     // would fetch zero pages of text and silently detect nothing.
