@@ -19,9 +19,9 @@
  * This file deliberately contains NO citation logic — it is the clean seam.
  */
 import type {
-  PageTextReadyEvent,
-  PDFTextContent,
-  ViewportLike,
+    PageTextReadyEvent,
+    PDFTextContent,
+    ViewportLike,
 } from "../citations/types";
 
 // ---------------------------------------------------------------------------
@@ -29,48 +29,52 @@ import type {
 // ---------------------------------------------------------------------------
 
 interface EventBus {
-  on(name: string, listener: (evt: TextLayerRenderedEvent) => void): void;
+    on(
+        name: "textlayerrendered",
+        listener: (evt: TextLayerRenderedEvent) => void
+    ): void;
+    on(name: string, listener: (evt: unknown) => void): void;
 }
 
 interface PDFPageProxy {
-  getTextContent(): Promise<PDFTextContent>;
+    getTextContent(): Promise<PDFTextContent>;
 }
 
 interface PDFDocumentProxy {
-  numPages: number;
-  getPage(pageNumber: number): Promise<PDFPageProxy>;
+    numPages: number;
+    getPage(pageNumber: number): Promise<PDFPageProxy>;
 }
 
 /** The `source` of a `textlayerrendered` event is the PDFPageView. */
 interface PDFPageView {
-  /** 1-based page number (pdf.js `PDFPageView#id`). */
-  id: number;
-  pdfPage?: PDFPageProxy;
-  viewport: ViewportLike;
-  /** TextLayerBuilder; `.div` is the rendered text-layer element. Null on scanned PDFs. */
-  textLayer?: { div: HTMLElement | null } | null;
-  /** The page container div. */
-  div: HTMLElement;
+    /** 1-based page number (pdf.js `PDFPageView#id`). */
+    id: number;
+    pdfPage?: PDFPageProxy;
+    viewport: ViewportLike;
+    /** TextLayerBuilder; `.div` is the rendered text-layer element. Null on scanned PDFs. */
+    textLayer?: { div: HTMLElement | null } | null;
+    /** The page container div. */
+    div: HTMLElement;
 }
 
 interface TextLayerRenderedEvent {
-  source: PDFPageView;
-  pageNumber: number;
-  error?: unknown;
+    source: PDFPageView;
+    pageNumber: number;
+    error?: unknown;
 }
 
 interface PDFViewerApplication {
-  initializedPromise: Promise<void>;
-  eventBus: EventBus;
-  pdfDocument?: PDFDocumentProxy | null;
-  pdfViewer?: { container?: HTMLElement; viewer?: HTMLElement } | null;
-  appConfig?: { appContainer?: HTMLElement } | null;
+    initializedPromise: Promise<void>;
+    eventBus: EventBus;
+    pdfDocument?: PDFDocumentProxy | null;
+    pdfViewer?: { container?: HTMLElement; viewer?: HTMLElement } | null;
+    appConfig?: { appContainer?: HTMLElement } | null;
 }
 
 declare global {
-  interface Window {
-    PDFViewerApplication?: PDFViewerApplication;
-  }
+    interface Window {
+        PDFViewerApplication?: PDFViewerApplication;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -84,11 +88,11 @@ const listeners = new Set<Listener>();
 const emittedByPage = new Map<number, PageTextReadyEvent>();
 
 function safeInvoke(listener: Listener, event: PageTextReadyEvent): void {
-  try {
-    listener(event);
-  } catch (err) {
-    console.error("[anchor] onPageTextReady listener threw:", err);
-  }
+    try {
+        listener(event);
+    } catch (err) {
+        console.error("[anchor] onPageTextReady listener threw:", err);
+    }
 }
 
 /**
@@ -97,27 +101,27 @@ function safeInvoke(listener: Listener, event: PageTextReadyEvent): void {
  * for each subsequent page. Idempotent per page (latest event per page wins).
  */
 export function onPageTextReady(listener: Listener): void {
-  listeners.add(listener);
-  for (const event of emittedByPage.values()) {
-    safeInvoke(listener, event);
-  }
+    listeners.add(listener);
+    for (const event of emittedByPage.values()) {
+        safeInvoke(listener, event);
+    }
 }
 
 /** Remove a previously registered listener. */
 export function offPageTextReady(listener: Listener): void {
-  listeners.delete(listener);
+    listeners.delete(listener);
 }
 
 /** Snapshot of events for pages whose text layer has already rendered. */
 export function getRenderedPageEvents(): PageTextReadyEvent[] {
-  return [...emittedByPage.values()];
+    return [...emittedByPage.values()];
 }
 
 function emit(event: PageTextReadyEvent): void {
-  emittedByPage.set(event.pageNumber, event);
-  for (const listener of listeners) {
-    safeInvoke(listener, event);
-  }
+    emittedByPage.set(event.pageNumber, event);
+    for (const listener of listeners) {
+        safeInvoke(listener, event);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -131,13 +135,13 @@ function emit(event: PageTextReadyEvent): void {
  * for stacking-context guidance.
  */
 export function getViewerContainer(): HTMLElement {
-  const app = window.PDFViewerApplication;
-  return (
-    app?.pdfViewer?.container ??
-    app?.appConfig?.appContainer ??
-    document.getElementById("viewerContainer") ??
-    document.body
-  );
+    const app = window.PDFViewerApplication;
+    return (
+        app?.pdfViewer?.container ??
+        app?.appConfig?.appContainer ??
+        document.getElementById("viewerContainer") ??
+        document.body
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -146,13 +150,13 @@ export function getViewerContainer(): HTMLElement {
 
 /** Keep only real TextItems (drop any TextMarkedContent), matching event shape. */
 function sanitizeTextContent(tc: PDFTextContent): PDFTextContent {
-  if (!tc?.items) return { items: [] };
-  return {
-    items: tc.items.filter(
-      (it): it is (typeof tc.items)[number] =>
-        typeof (it as { str?: unknown }).str === "string"
-    ),
-  };
+    if (!tc?.items) return { items: [] };
+    return {
+        items: tc.items.filter(
+            (it): it is (typeof tc.items)[number] =>
+                typeof (it as { str?: unknown }).str === "string"
+        ),
+    };
 }
 
 /**
@@ -161,20 +165,20 @@ function sanitizeTextContent(tc: PDFTextContent): PDFTextContent {
  * front. Resolves to `[]` if the document is unavailable. Never throws.
  */
 export async function getAllPagesText(): Promise<PDFTextContent[]> {
-  const app = window.PDFViewerApplication;
-  const pdfDoc = app?.pdfDocument;
-  if (!pdfDoc || typeof pdfDoc.numPages !== "number") return [];
-  const pages: PDFTextContent[] = [];
-  for (let i = 1; i <= pdfDoc.numPages; i++) {
-    try {
-      const page = await pdfDoc.getPage(i);
-      pages.push(sanitizeTextContent(await page.getTextContent()));
-    } catch (err) {
-      console.warn(`[anchor] getAllPagesText: page ${i} failed:`, err);
-      pages.push({ items: [] });
+    const app = window.PDFViewerApplication;
+    const pdfDoc = app?.pdfDocument;
+    if (!pdfDoc || typeof pdfDoc.numPages !== "number") return [];
+    const pages: PDFTextContent[] = [];
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        try {
+            const page = await pdfDoc.getPage(i);
+            pages.push(sanitizeTextContent(await page.getTextContent()));
+        } catch (err) {
+            console.warn(`[anchor] getAllPagesText: page ${i} failed:`, err);
+            pages.push({ items: [] });
+        }
     }
-  }
-  return pages;
+    return pages;
 }
 
 // ---------------------------------------------------------------------------
@@ -182,55 +186,67 @@ export async function getAllPagesText(): Promise<PDFTextContent[]> {
 // ---------------------------------------------------------------------------
 
 async function handleTextLayerRendered(
-  evt: TextLayerRenderedEvent
+    evt: TextLayerRenderedEvent
 ): Promise<void> {
-  const pageView = evt.source;
-  const textLayerDiv = pageView?.textLayer?.div;
-  const pdfPage = pageView?.pdfPage;
+    const pageView = evt.source;
+    const textLayerDiv = pageView?.textLayer?.div;
+    const pdfPage = pageView?.pdfPage;
 
-  // Scanned / image-only pages (and any render error) have no usable text
-  // layer — stay inert, never throw.
-  if (!pageView || !textLayerDiv || !pdfPage || evt.error) {
-    return;
-  }
+    // Scanned / image-only pages (and any render error) have no usable text
+    // layer — stay inert, never throw.
+    if (!pageView || !textLayerDiv || !pdfPage || evt.error) {
+        return;
+    }
 
-  let textContent: PDFTextContent;
-  try {
-    textContent = await pdfPage.getTextContent();
-  } catch (err) {
-    console.warn(
-      `[anchor] getTextContent failed for page ${evt.pageNumber}:`,
-      err
-    );
-    return;
-  }
+    let textContent: PDFTextContent;
+    try {
+        textContent = await pdfPage.getTextContent();
+    } catch (err) {
+        console.warn(
+            `[anchor] getTextContent failed for page ${evt.pageNumber}:`,
+            err
+        );
+        return;
+    }
 
-  if (!textContent.items || textContent.items.length === 0) {
-    // Nothing to overlay; treat as inert.
-    return;
-  }
+    if (!textContent.items || textContent.items.length === 0) {
+        // Nothing to overlay; treat as inert.
+        return;
+    }
 
-  emit({
-    pageNumber: pageView.id, // 1-based
-    textContent,
-    textLayerDiv,
-    viewport: pageView.viewport,
-  });
+    emit({
+        pageNumber: pageView.id, // 1-based
+        textContent,
+        textLayerDiv,
+        viewport: pageView.viewport,
+    });
 }
 
 async function main(): Promise<void> {
-  const app = window.PDFViewerApplication;
-  if (!app) {
-    console.error(
-      "[anchor] PDFViewerApplication not found; citation bootstrap disabled."
-    );
-    return;
-  }
-  await app.initializedPromise;
-  app.eventBus.on("textlayerrendered", (evt) => {
-    void handleTextLayerRendered(evt);
-  });
-  void startCitationPipeline();
+    const app = window.PDFViewerApplication;
+    if (!app) {
+        console.error(
+            "[anchor] PDFViewerApplication not found; citation bootstrap disabled."
+        );
+        return;
+    }
+    await app.initializedPromise;
+    app.eventBus.on("textlayerrendered", (evt) => {
+        void handleTextLayerRendered(evt);
+    });
+
+    // The document loads asynchronously AFTER app init — pdfDocument is null
+    // until the eventBus fires "documentloaded". Starting the pipeline earlier
+    // would fetch zero pages of text and silently detect nothing.
+    let started = false;
+    const start = () => {
+        if (started) return;
+        started = true;
+        emittedByPage.clear(); // no stale pages from a previous document
+        void startCitationPipeline();
+    };
+    if (app.pdfDocument) start();
+    else app.eventBus.on("documentloaded", start);
 }
 
 /**
@@ -239,28 +255,33 @@ async function main(): Promise<void> {
  * disables the feature quietly instead of breaking the viewer.
  */
 async function startCitationPipeline(): Promise<void> {
-  try {
-    const [{ DocumentCitationDetector }, { BibliographyResolver }, { createMetadataProvider }, { CitationController }, { getSettings }] =
-      await Promise.all([
-        import("../citations/detect"),
-        import("../citations/resolve"),
-        import("../citations/metadata"),
-        import("../citations/ui/controller"),
-        import("../options/settings"),
-      ]);
-    const settings = await getSettings();
-    const controller = new CitationController({
-      getAllPagesText,
-      onPageTextReady,
-      detectorFactory: (pages) => new DocumentCitationDetector(pages),
-      resolverFactory: (pages) => new BibliographyResolver(pages),
-      provider: createMetadataProvider({ mailto: settings.mailto }),
-      hoverPreview: settings.hoverPreview,
-    });
-    await controller.start();
-  } catch (err) {
-    console.warn("[anchor] citation pipeline failed to start:", err);
-  }
+    try {
+        const [
+            { DocumentCitationDetector },
+            { BibliographyResolver },
+            { createMetadataProvider },
+            { CitationController },
+            { getSettings },
+        ] = await Promise.all([
+            import("../citations/detect"),
+            import("../citations/resolve"),
+            import("../citations/metadata"),
+            import("../citations/ui/controller"),
+            import("../options/settings"),
+        ]);
+        const settings = await getSettings();
+        const controller = new CitationController({
+            getAllPagesText,
+            onPageTextReady,
+            detectorFactory: (pages) => new DocumentCitationDetector(pages),
+            resolverFactory: (pages) => new BibliographyResolver(pages),
+            provider: createMetadataProvider({ mailto: settings.mailto }),
+            hoverPreview: settings.hoverPreview,
+        });
+        await controller.start();
+    } catch (err) {
+        console.warn("[anchor] citation pipeline failed to start:", err);
+    }
 }
 
 void main();
