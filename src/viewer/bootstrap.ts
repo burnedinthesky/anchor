@@ -23,6 +23,7 @@ import type {
     PDFTextContent,
     ViewportLike,
 } from "../citations/types";
+import { ensureHostAccess } from "./permission-guard";
 
 // ---------------------------------------------------------------------------
 // Minimal structural types for the pdf.js globals we read (no pdfjs import).
@@ -231,6 +232,12 @@ async function main(): Promise<void> {
         return;
     }
     await app.initializedPromise;
+
+    // Firefox MV3 host permissions are opt-in: without the grant, neither the
+    // PDF fetch nor the citation APIs work. Surface a grant banner if missing.
+    const fileUrl = new URLSearchParams(location.search).get("file");
+    void ensureHostAccess(fileUrl);
+
     app.eventBus.on("textlayerrendered", (evt) => {
         void handleTextLayerRendered(evt);
     });
@@ -270,15 +277,21 @@ async function startCitationPipeline(): Promise<void> {
             import("../options/settings"),
         ]);
         const settings = await getSettings();
+        let detector: { dominantScheme?: string | null } | undefined;
         const controller = new CitationController({
             getAllPagesText,
             onPageTextReady,
-            detectorFactory: (pages) => new DocumentCitationDetector(pages),
+            detectorFactory: (pages) =>
+                (detector = new DocumentCitationDetector(pages)),
             resolverFactory: (pages) => new BibliographyResolver(pages),
             provider: createMetadataProvider({ mailto: settings.mailto }),
             hoverPreview: settings.hoverPreview,
         });
         await controller.start();
+        // Milestone log so field failures are diagnosable from the console.
+        console.info(
+            `[anchor] citation pipeline ready — dominant scheme: ${detector?.dominantScheme ?? "none detected"}`
+        );
     } catch (err) {
         console.warn("[anchor] citation pipeline failed to start:", err);
     }
