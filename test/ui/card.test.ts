@@ -90,11 +90,13 @@ describe("PreviewCard states", () => {
         expect(footer.querySelector(".metrics")!.textContent).toBe(
             "Cited by 142"
         );
+        // Versions is a single Scholar hyperlink, not an enumerated host list.
         const versions = footer.querySelector(".versions")!;
-        expect(versions.textContent).toContain("arxiv.org");
-        expect(versions.textContent).toContain("publisher (no link)");
-        // Only the version with a URL is a link.
+        const vLink = versions.querySelector("a") as HTMLAnchorElement;
         expect(versions.querySelectorAll("a").length).toBe(1);
+        expect(vLink.textContent).toBe("Versions (2)");
+        expect(vLink.href).toContain("scholar.google.com");
+        expect(versions.textContent).not.toContain("arxiv.org");
 
         // Related articles are hidden and versions is inline — no ul list.
         expect(root.querySelector("ul.list")).toBeNull();

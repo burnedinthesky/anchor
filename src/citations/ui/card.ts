@@ -363,19 +363,15 @@ export class PreviewCard {
             info.appendChild(m);
         }
         if (record.versions.length) {
+            // A single link rather than the host list — Scholar's version
+            // cluster is the useful destination, not our enumeration.
             const versions = this.el("span", "versions");
-            const label = this.el("span", "versions-label");
-            label.textContent = `Versions (${record.versions.length}): `;
-            versions.appendChild(label);
-            record.versions.forEach((v, i) => {
-                if (i > 0) versions.appendChild(this.doc.createTextNode(", "));
-                if (v.url) versions.appendChild(this.link(v.label, v.url));
-                else {
-                    const s = this.doc.createElement("span");
-                    s.textContent = v.label;
-                    versions.appendChild(s);
-                }
-            });
+            versions.appendChild(
+                this.link(
+                    `Versions (${record.versions.length})`,
+                    record.scholarUrl
+                )
+            );
             info.appendChild(versions);
         }
         if (info.childNodes.length) footer.appendChild(info);
