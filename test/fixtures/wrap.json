@@ -1,0 +1,310 @@
+[
+  {
+    "items": [
+      {
+        "str": "Background",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 50,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Jones, 2018)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          125,
+          720
+        ],
+        "width": 65,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "and",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          193,
+          720
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Lee, 2019)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          211,
+          720
+        ],
+        "width": 55,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "apply",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          269,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "here.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          297,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "More",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "context",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          95,
+          702
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Park, 2020)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          133,
+          702
+        ],
+        "width": 60,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "is",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          196,
+          702
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "also",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          209,
+          702
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "relevant.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          232,
+          702
+        ],
+        "width": 45,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Prior",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "work",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          100,
+          684
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Smith et al.,",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          123,
+          684
+        ],
+        "width": 70,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "2021)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "confirms",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          100,
+          666
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "this",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          143,
+          666
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "finding.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          166,
+          666
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  }
+]

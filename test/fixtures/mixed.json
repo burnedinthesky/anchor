@@ -1,0 +1,570 @@
+[
+  {
+    "items": [
+      {
+        "str": "First",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "claim",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          100,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Alpha, 2020)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          128,
+          720
+        ],
+        "width": 65,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "holds",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          196,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "here.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          224,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Second",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 30,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "claim",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          105,
+          702
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Beta, 2019)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          133,
+          702
+        ],
+        "width": 60,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "as",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          196,
+          702
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "well.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          209,
+          702
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Third",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "point",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          100,
+          684
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Gamma, 2021)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          128,
+          684
+        ],
+        "width": 65,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "follows.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          196,
+          684
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Fourth",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 30,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "point",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          105,
+          666
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Delta, 2018)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          133,
+          666
+        ],
+        "width": 65,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "too.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          201,
+          666
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  },
+  {
+    "items": [
+      {
+        "str": "References",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 50,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[1]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Alpha, A. (2020). A paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          702
+        ],
+        "width": 165,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[2]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Beta, B. (2019). B paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          684
+        ],
+        "width": 160,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[3]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Gamma, C. (2021). C paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          666
+        ],
+        "width": 165,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[4]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          648
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Delta, D. (2018). D paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          648
+        ],
+        "width": 165,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[5]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          630
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Epsilon, E. (2017). E paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          630
+        ],
+        "width": 175,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[6]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          612
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Zeta, F. (2016). F paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          612
+        ],
+        "width": 160,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[7]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          594
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Eta, G. (2015). G paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          594
+        ],
+        "width": 155,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[8]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          576
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Theta, H. (2014). H paper. Venue.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          576
+        ],
+        "width": 165,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  }
+]

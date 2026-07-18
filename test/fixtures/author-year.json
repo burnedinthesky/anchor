@@ -1,0 +1,746 @@
+[
+  {
+    "items": [
+      {
+        "str": "Prior",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "work",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          100,
+          720
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Smith et al., 2021)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          123,
+          720
+        ],
+        "width": 100,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "established",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          226,
+          720
+        ],
+        "width": 55,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "the",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          284,
+          720
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "method.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          302,
+          720
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Recent",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 30,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "analysis",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          105,
+          702
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Gómez and Jones, 2020)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          148,
+          702
+        ],
+        "width": 115,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "extends",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          266,
+          702
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "it.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          304,
+          702
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "As",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "shown",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          85,
+          684
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "by",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          113,
+          684
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "Smith",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          126,
+          684
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "et",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          154,
+          684
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "al.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          167,
+          684
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(2021),",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          185,
+          684
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "results",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          223,
+          684
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "improve.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          261,
+          684
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Two",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "efforts",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          666
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Smith, 2020; Jones, 2021)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          128,
+          666
+        ],
+        "width": 130,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "diverge",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          261,
+          666
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "here.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          299,
+          666
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Earlier",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          648
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "results",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          110,
+          648
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Brown, 2020a)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          148,
+          648
+        ],
+        "width": 70,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "and",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          221,
+          648
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "later",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          239,
+          648
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Brown, 2020b)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          267,
+          648
+        ],
+        "width": 70,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "differ.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          340,
+          648
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "We",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          630
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "also",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          85,
+          630
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "note",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          108,
+          630
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Smith & Jones, 2021)",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          131,
+          630
+        ],
+        "width": 105,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "and",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          239,
+          630
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "(Smith and Jones 2021).",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          257,
+          630
+        ],
+        "width": 115,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  },
+  {
+    "items": [
+      {
+        "str": "References",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 50,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Brown, A. (2020a). A first study of many things. Journal A.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 295,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Brown, A. (2020b). A second study of other things. Journal B.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 305,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Gómez, M. and Jones, R. (2020). Extending the method for",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 280,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "several new application domains. Journal C.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          648
+        ],
+        "width": 215,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Jones, R. (2021). Divergent efforts in the field. Proc. D.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          630
+        ],
+        "width": 290,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Smith, J., Doe, K., and Roe, L. (2021). Establishing the",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          612
+        ],
+        "width": 280,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "method with rigorous experiments. ACM Press E.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          594
+        ],
+        "width": 230,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  }
+]

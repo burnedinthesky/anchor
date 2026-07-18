@@ -1,0 +1,730 @@
+[
+  {
+    "items": [
+      {
+        "str": "Deep",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "learning",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          95,
+          720
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "has",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          138,
+          720
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "advanced",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          156,
+          720
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "rapidly",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          199,
+          720
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "[1]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          237,
+          720
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "recently.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          255,
+          720
+        ],
+        "width": 45,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Several",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "architectures",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          110,
+          702
+        ],
+        "width": 65,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "[3, 5–7]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          178,
+          702
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "have",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          221,
+          702
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "been",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          244,
+          702
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "proposed.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          267,
+          702
+        ],
+        "width": 45,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Comparative",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 55,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "studies",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          130,
+          684
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "[3]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          168,
+          684
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "–",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          186,
+          684
+        ],
+        "width": 5,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "[5]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          194,
+          684
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "confirm",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          212,
+          684
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "these",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          250,
+          684
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "results.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          278,
+          684
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Further",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "discussion",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          110,
+          666
+        ],
+        "width": 50,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "appears",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          163,
+          666
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "in",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          201,
+          666
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "prior",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          214,
+          666
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "surveys",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          242,
+          666
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "[2].",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          280,
+          666
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  },
+  {
+    "items": [
+      {
+        "str": "References",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 50,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[1]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "A. Smith and B. Jones. Deep nets. Journal of ML, 2019.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          702
+        ],
+        "width": 270,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[2]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "C. Doe. Wide models. In Proc. NeurIPS, 2020. doi:10.1109/5.771073.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          684
+        ],
+        "width": 330,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[3]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "E. Roe. Attention mechanisms. Trans. AI, 2018.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          666
+        ],
+        "width": 230,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[4]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          648
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "F. Lee. Transformers everywhere. ACM Press, 2021.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          648
+        ],
+        "width": 245,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[5]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          630
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "G. Kim. Scaling laws for models. arXiv preprint, 2020.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          630
+        ],
+        "width": 270,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[6]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          612
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "H. Park. Pretraining strategies. ICML, 2019.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          612
+        ],
+        "width": 220,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[7]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          594
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "I. Cho. Fine-tuning language models. EMNLP, 2020.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          594
+        ],
+        "width": 245,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[8]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          576
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "J. Yun. Knowledge distillation methods. CVPR, 2022.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          576
+        ],
+        "width": 255,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  }
+]

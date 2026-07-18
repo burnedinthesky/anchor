@@ -1,0 +1,538 @@
+[
+  {
+    "items": [
+      {
+        "str": "Recent",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 30,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "studies",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          105,
+          720
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "1",
+        "transform": [
+          6,
+          0,
+          0,
+          6,
+          143,
+          723
+        ],
+        "width": 3,
+        "height": 6,
+        "fontName": "g_sup",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "have",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          147.8,
+          720
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "shown",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          170.8,
+          720
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "significant",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          198.8,
+          720
+        ],
+        "width": 55,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "gains.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          256.8,
+          720
+        ],
+        "width": 30,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Other",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "work",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          100,
+          702
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "2,3",
+        "transform": [
+          6,
+          0,
+          0,
+          6,
+          123,
+          705
+        ],
+        "width": 9,
+        "height": 6,
+        "fontName": "g_sup",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "reports",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          133.8,
+          702
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "similar",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          171.8,
+          702
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "results",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          209.8,
+          702
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "in",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          247.8,
+          702
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "42",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          260.8,
+          702
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "trials.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          273.8,
+          702
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "Follow-up",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 45,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "analysis",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          120,
+          684
+        ],
+        "width": 40,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "4",
+        "transform": [
+          6,
+          0,
+          0,
+          6,
+          163,
+          687
+        ],
+        "width": 3,
+        "height": 6,
+        "fontName": "g_sup",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "extends",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          167.8,
+          684
+        ],
+        "width": 35,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "this",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          205.8,
+          684
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "line",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          228.8,
+          684
+        ],
+        "width": 20,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "of",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          251.8,
+          684
+        ],
+        "width": 10,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "work.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          264.8,
+          684
+        ],
+        "width": 25,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  },
+  {
+    "items": [
+      {
+        "str": "References",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          720
+        ],
+        "width": 50,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[1]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          702
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "A. One. A first superscript paper. Journal J, 2019.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          702
+        ],
+        "width": 255,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[2]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          684
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "B. Two. A second contribution. Journal K, 2020.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          684
+        ],
+        "width": 235,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[3]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          666
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "C. Three. A third result set. Journal L, 2021.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          666
+        ],
+        "width": 230,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      },
+      {
+        "str": "[4]",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          72,
+          648
+        ],
+        "width": 15,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": false
+      },
+      {
+        "str": "D. Four. A fourth analysis. Journal M, 2022.",
+        "transform": [
+          10,
+          0,
+          0,
+          10,
+          90,
+          648
+        ],
+        "width": 220,
+        "height": 10,
+        "fontName": "g_body",
+        "dir": "ltr",
+        "hasEOL": true
+      }
+    ]
+  }
+]
