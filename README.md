@@ -67,26 +67,13 @@ The extension options page exposes:
 
 Firefox-only by design: Chrome's MV3 does not support blocking `webRequest`.
 
-**Important — Firefox treats MV3 host permissions as opt-in.** On a permanent
-install the extension starts with NO website access (the extensions-panel badge
-reads "Can't read and change data on this site"), so it cannot fetch PDF bytes
-or citation metadata until you grant access. The viewer detects this and shows
-a red **"Grant access"** banner; you can also grant manually via
-`about:addons → Anchor PDF Reader → Permissions → Access your data for all
-websites`. Temporary installs (`about:debugging` / `web-ext run`) are granted
-automatically.
+**Important — Firefox treats MV3 host permissions as opt-in.** On a permanent install the extension starts with NO website access (the extensions-panel badge reads "Can't read and change data on this site"), so it cannot fetch PDF bytes or citation metadata until you grant access. The viewer detects this and shows a red **"Grant access"** banner; you can also grant manually via `about:addons → Anchor PDF Reader → Permissions → Access your data for all websites`. Temporary installs (`about:debugging` / `web-ext run`) are granted automatically.
 
 ## Troubleshooting
 
-- **PDF redirects to the viewer but nothing loads / no citations:** almost
-  always the host-permission grant above. Look for the red banner, or check
-  the Permissions tab in `about:addons`.
-- **Diagnostics:** open devtools on the viewer tab and filter the console for
-  `[anchor]`. A healthy load logs
-  `citation pipeline ready — dominant scheme: …`; failures log specific
-  `[anchor]` warnings (permissions, page-text fetch, detection).
-- **Which build am I running?** `about:addons` shows the version; current is
-  the version in `src/manifest.json`.
+- **PDF redirects to the viewer but nothing loads / no citations:** almost always the host-permission grant above. Look for the red banner, or check the Permissions tab in `about:addons`.
+- **Diagnostics:** open devtools on the viewer tab and filter the console for `[anchor]`. A healthy load logs `citation pipeline ready — dominant scheme: …`; failures log specific `[anchor]` warnings (permissions, page-text fetch, detection).
+- **Which build am I running?** `about:addons` shows the version; current is the version in `src/manifest.json`.
 
 ## Repository layout
 
