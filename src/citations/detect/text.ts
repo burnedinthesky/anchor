@@ -73,7 +73,20 @@ export function concatPage(items: TextItem[]): PageText {
         if (i > 0) {
             const prev = items[i - 1];
             if (prev) {
-                const sep = separatorBetween(prev, item, med);
+                let sep = separatorBetween(prev, item, med);
+                // Dehyphenate line-wrap hyphens ("Tou-" + "vron" -> "Touvron")
+                // so surname/word tokens match across wraps. Only a newline
+                // break onto a lowercase continuation qualifies; inline
+                // compounds keep their hyphen.
+                if (
+                    sep === "\n" &&
+                    text.endsWith("-") &&
+                    /^[a-zà-ÿ]/.test(item.str)
+                ) {
+                    text = text.slice(0, -1);
+                    map.pop();
+                    sep = "";
+                }
                 for (let s = 0; s < sep.length; s++) {
                     text += sep.charAt(s);
                     map.push({ itemIndex: -1, offsetInItem: -1 });

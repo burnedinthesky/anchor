@@ -10,6 +10,60 @@ import { makeViewport } from "../fixtures/loader";
 
 const vp = makeViewport(1.5, 792);
 
+describe("concatenation dehyphenation", () => {
+    it('joins hyphen-wrapped words across lines ("Tou-" + "vron" -> "Touvron") with a valid map', () => {
+        const items: TextItem[] = [
+            {
+                str: "models (Tou-",
+                transform: [10, 0, 0, 10, 100, 730],
+                width: 60,
+                height: 10,
+                fontName: "b",
+                dir: "ltr",
+                hasEOL: true,
+            },
+            {
+                str: "vron et al., 2023) show",
+                transform: [10, 0, 0, 10, 72, 712],
+                width: 115,
+                height: 10,
+                fontName: "b",
+                dir: "ltr",
+            },
+        ];
+        const { text, map } = concatPage(items);
+        expect(text).toContain("Touvron et al., 2023");
+        // The map stays aligned: every char of "vron" points at item 1.
+        const v = text.indexOf("vron");
+        expect(map[v]).toEqual({ itemIndex: 1, offsetInItem: 0 });
+        expect(map.length).toBe(text.length);
+    });
+
+    it("keeps the hyphen when the continuation starts uppercase (real compound)", () => {
+        const items: TextItem[] = [
+            {
+                str: "the Wilson-",
+                transform: [10, 0, 0, 10, 100, 730],
+                width: 55,
+                height: 10,
+                fontName: "b",
+                dir: "ltr",
+                hasEOL: true,
+            },
+            {
+                str: "Cowan model",
+                transform: [10, 0, 0, 10, 72, 712],
+                width: 55,
+                height: 10,
+                fontName: "b",
+                dir: "ltr",
+            },
+        ];
+        const { text } = concatPage(items);
+        expect(text).toContain("Wilson-\nCowan");
+    });
+});
+
 describe("geometry mapping (§4.3)", () => {
     it("maps a single-item [1] rect with correct y-flip and size", () => {
         // "[1]" 3 chars, size 10, baseline y=730, x=100.

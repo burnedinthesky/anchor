@@ -6,6 +6,11 @@
  * reference labels don't skew the vote), picks the single dominant scheme
  * (precision over recall), then `detect()` returns only that scheme's markers
  * for a given page.
+ *
+ * The reference-block exclusion applies ONLY to the vote, not to `detect()`:
+ * ICML/NeurIPS-style papers put appendices (with real citations) AFTER the
+ * bibliography, and markers on the bibliography's own entry labels are useful
+ * rather than harmful — both must stay clickable.
  */
 import type {
     CitationDetector,
@@ -110,14 +115,11 @@ export class DocumentCitationDetector implements CitationDetector {
         if (!this.scheme) return [];
         const items = text.items;
         const { text: concat, map, itemStarts } = concatPage(items);
-        const limit = this.charLimit(page, concat.length);
-        if (limit <= 0) return [];
 
         const markers: CitationMarker[] = [];
 
         if (this.scheme === "superscript") {
             for (const run of findSuperscriptRuns(items, itemStarts)) {
-                if (run.start >= limit) continue;
                 const id = `p${page}#${run.start}`;
                 const rects = rectsForSpan(
                     run.start,
@@ -147,7 +149,6 @@ export class DocumentCitationDetector implements CitationDetector {
                 : findAuthorYearMatches(concat);
 
         for (const rm of raw) {
-            if (rm.start >= limit) continue;
             const id = `p${page}#${rm.start}`;
             const rects = rectsForSpan(rm.start, rm.end, map, items, viewport);
             for (const rect of rects) {

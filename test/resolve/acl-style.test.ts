@@ -70,6 +70,11 @@ function aclPages(): PDFTextContent[] {
         L(82, "neural network models for joint intent detection."),
         L(72, "Baolin Peng, Chunyuan Li, and Jianfeng Gao. 2021."),
         L(82, "Soloist: Building task bots at scale."),
+        // Year LAST, preceded by a page range that looks like years
+        // (Medusa-paper regression: Brown et al., 2020 never resolved).
+        L(72, "Tom Brown and Benjamin Mann. Language models are"),
+        L(82, "few-shot learners. Advances in neural information"),
+        L(82, "processing systems, 33:1877–1901, 2020."),
     ];
     const rightRefs: TextItem[] = [
         // Right column — entry starts at a different flush margin.
@@ -143,6 +148,14 @@ describe("ACL-style bibliography resolution (regression)", () => {
             ordinals: [2002],
         };
         expect(res.resolve(numeric)).toBeNull();
+    });
+
+    it("indexes entries under trailing years too (page ranges masquerade as the first year)", () => {
+        // "33:1877–1901, 2020." — the entry's real year is last; 1877/1901
+        // must not eclipse it.
+        const r = res.resolve(ayMarker("brown", 2020, "Brown and Mann, 2020"));
+        expect(r).not.toBeNull();
+        expect(r!.rawText).toContain("few-shot learners");
     });
 
     it("does not index appendix noise as entries for cited keys", () => {

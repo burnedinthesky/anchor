@@ -20,8 +20,14 @@ describe("DocumentCitationDetector — numeric fixture (acceptance row 1, local 
         expect(m.every((x) => x.scheme === "numeric")).toBe(true);
     });
 
-    it("excludes the references page from overlays", () => {
-        expect(det.detect(2, fixtures.numeric[1]!, vp)).toHaveLength(0);
+    it("overlays the references page too (entry labels are clickable; appendices after the bibliography cite)", () => {
+        // The reference block is excluded from the scheme VOTE only. Papers
+        // that place related-work appendices after the bibliography (ICML/
+        // NeurIPS style) need markers there, and a marker on a bibliography
+        // entry's own [n] label harmlessly previews that entry.
+        const refPage = det.detect(2, fixtures.numeric[1]!, vp);
+        expect(refPage.length).toBeGreaterThan(0);
+        expect(refPage.every((m) => m.scheme === "numeric")).toBe(true);
     });
 
     it("gives stable deterministic ids of the form p{page}#{startChar}", () => {

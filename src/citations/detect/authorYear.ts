@@ -34,6 +34,80 @@ function splitCites(inner: string): { text: string; offset: number }[] {
     return out;
 }
 
+/**
+ * Strict cite parse for page-boundary fragments: the author phrase must sit
+ * IMMEDIATELY before the year. An unclosed fragment can start with arbitrary
+ * page furniture (a running header, the previous sentence), so the lax
+ * "first surname anywhere before the year" rule would produce huge, wrongly
+ * keyed markers there.
+ */
+function parseCiteTight(
+    text: string
+): { authorKey: string; year: number; start: number; end: number } | null {
+    const ym = YEAR_G.exec(text);
+    YEAR_G.lastIndex = 0;
+    if (!ym || ym.index === undefined) return null;
+    const before = text.slice(0, ym.index);
+    const pm = before.match(
+        /([A-ZÀ-Þ][A-Za-zÀ-ÿ'’-]+(?:\s+(?:and|&)\s+[A-ZÀ-Þ][A-Za-zÀ-ÿ'’-]+)*(?:\s+et\s+al\.?)?)[\s,]*$/
+    );
+    if (!pm || pm.index === undefined) return null;
+    const phrase = pm[1] ?? "";
+    // A bare capitalized word right before a year is usually prose ("...
+    // Decoding Heads 2022"); real cites have "Author," or an et-al/and chain.
+    if (!/,\s*$/.test(before) && !/\b(?:et\s+al|and|&)\b/.test(phrase)) {
+        return null;
+    }
+    const sn = firstSurname(phrase);
+    if (!sn) return null;
+    let end = ym.index + ym[0].length;
+    if (/[a-z]/.test(text.charAt(end))) end++; // 2020a-style suffix
+    return {
+        authorKey: normalizeSurname(sn),
+        year: Number(ym[1]),
+        start: pm.index,
+        end,
+    };
+}
+
+function collectParenGroup(
+    inner: string,
+    innerStart: number,
+    out: RawMatch[],
+    boundary = false
+): void {
+    if (!YEAR.test(inner)) return;
+    for (const cite of splitCites(inner)) {
+        if (boundary) {
+            const tight = parseCiteTight(cite.text);
+            if (!tight) continue;
+            const abs = innerStart + cite.offset;
+            out.push({
+                start: abs + tight.start,
+                end: abs + tight.end,
+                rawText: cite.text.slice(tight.start, tight.end).trim(),
+                scheme: "author-year",
+                authorKey: tight.authorKey,
+                year: tight.year,
+            });
+            continue;
+        }
+        const parsed = parseCite(cite.text);
+        if (!parsed) continue;
+        const abs = innerStart + cite.offset;
+        // Trim leading whitespace from the reported span so the rect hugs text.
+        const leadWs = cite.text.length - cite.text.replace(/^\s+/, "").length;
+        out.push({
+            start: abs + leadWs,
+            end: abs + cite.text.replace(/\s+$/, "").length,
+            rawText: cite.text.trim(),
+            scheme: "author-year",
+            authorKey: parsed.authorKey,
+            year: parsed.year,
+        });
+    }
+}
+
 export function findAuthorYearMatches(text: string): RawMatch[] {
     const out: RawMatch[] = [];
 
@@ -41,25 +115,21 @@ export function findAuthorYearMatches(text: string): RawMatch[] {
     const PAREN = /\(([^()]*)\)/g;
     let m: RegExpExecArray | null;
     while ((m = PAREN.exec(text))) {
-        const inner = m[1] ?? "";
-        if (!YEAR.test(inner)) continue;
-        const innerStart = m.index + 1; // offset of `inner` in `text`
-        for (const cite of splitCites(inner)) {
-            const parsed = parseCite(cite.text);
-            if (!parsed) continue;
-            const abs = innerStart + cite.offset;
-            // Trim leading whitespace from the reported span so the rect hugs text.
-            const leadWs =
-                cite.text.length - cite.text.replace(/^\s+/, "").length;
-            out.push({
-                start: abs + leadWs,
-                end: abs + cite.text.replace(/\s+$/, "").length,
-                rawText: cite.text.trim(),
-                scheme: "author-year",
-                authorKey: parsed.authorKey,
-                year: parsed.year,
-            });
-        }
+        collectParenGroup(m[1] ?? "", m.index + 1, out);
+    }
+
+    // Page-boundary fragments: detection runs per page, so a parenthetical
+    // group cut by a page break leaves an unclosed "(..." at the end of one
+    // page and a leading "...)" on the next. Cites whose surname AND year are
+    // complete within a fragment are recoverable; the cite straddling the
+    // break itself is not (precision over recall).
+    const lastOpen = text.lastIndexOf("(");
+    if (lastOpen !== -1 && !text.includes(")", lastOpen)) {
+        collectParenGroup(text.slice(lastOpen + 1), lastOpen + 1, out, true);
+    }
+    const firstClose = text.indexOf(")");
+    if (firstClose !== -1 && !text.slice(0, firstClose).includes("(")) {
+        collectParenGroup(text.slice(0, firstClose), 0, out, true);
     }
 
     // Narrative: Author et al. (2021) / Author and Author (2021) / Author (2021)

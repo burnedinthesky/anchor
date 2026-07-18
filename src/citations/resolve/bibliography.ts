@@ -26,6 +26,13 @@ interface AuthorYearEntry {
     surnames: string[];
     year: number;
     suffix: string | null;
+    /**
+     * Other standalone years in the entry. Some styles put the publication
+     * year last ("... systems, 33:1877-1901, 2020.") where a page range or
+     * volume number can masquerade as the "first year" — the real year must
+     * still be reachable, so entries are weakly indexed under these too.
+     */
+    extraYears: number[];
 }
 
 /** Cluster sorted values whose neighbors are within `gap`; return each cluster's minimum. */
@@ -40,6 +47,37 @@ function clusterMins(values: number[], gap: number): number[] {
     return mins;
 }
 
+/**
+ * Entry-start (flush) margins for ONE page of an unnumbered bibliography.
+ * Flush margins and hanging indents both recur across many lines; an x that
+ * lies a hanging-indent's distance (4-20 units) right of another frequent x
+ * is the continuation indent of that margin, not a margin itself. The
+ * frequency bar scales with the page's dominant x so incidental content
+ * (tables, figure text) does not qualify.
+ */
+function entryStartMargins(lines: Line[]): number[] {
+    const counts = new Map<number, number>();
+    for (const l of lines) {
+        const r = Math.round(l.x);
+        counts.set(r, (counts.get(r) ?? 0) + 1);
+    }
+    const maxCount = Math.max(...counts.values());
+    const threshold = Math.max(3, maxCount * 0.1);
+    const frequent = [...counts.entries()]
+        .filter(([, n]) => n >= threshold)
+        .map(([x]) => x)
+        .sort((a, b) => a - b);
+    const margins = frequent.filter(
+        (x) => !frequent.some((other) => x - other >= 4 && x - other <= 20)
+    );
+    if (margins.length > 0) return margins;
+    // Tiny pages (fixtures, short docs): fall back to per-cluster minima.
+    return clusterMins(
+        lines.map((l) => Math.round(l.x)),
+        40
+    );
+}
+
 export class BibliographyResolver implements ReferenceResolver {
     private readonly hasSection: boolean;
     private readonly numberedMap = new Map<number, string>();
@@ -52,32 +90,38 @@ export class BibliographyResolver implements ReferenceResolver {
         this.hasSection = rb !== null;
         if (!rb) return;
 
-        const refLines = this.collectRefLines(
+        const refLinesByPage = this.collectRefLines(
             pages,
             rb.pageIndex,
             rb.firstItem
         );
-        if (!this.segmentNumbered(refLines)) {
-            this.segmentAuthorYear(refLines);
+        if (!this.segmentNumbered(refLinesByPage.flat())) {
+            this.segmentAuthorYear(refLinesByPage);
         }
     }
 
-    /** Lines from the reference heading (exclusive) to the end of the document. */
+    /**
+     * Lines from the reference heading (exclusive) to the end of the
+     * document, grouped per page — margin geometry is only meaningful within
+     * one page (see segmentAuthorYear).
+     */
     private collectRefLines(
         pages: PDFTextContent[],
         pageIndex: number,
         firstItem: number
-    ): Line[] {
-        const lines: Line[] = [];
+    ): Line[][] {
+        const byPage: Line[][] = [];
         for (let p = pageIndex; p < pages.length; p++) {
             const page = pages[p];
             if (!page) continue;
+            const lines: Line[] = [];
             for (const line of assembleLines(page.items)) {
                 if (p === pageIndex && line.firstItem <= firstItem) continue; // skip heading + preamble
                 lines.push(line);
             }
+            byPage.push(lines);
         }
-        return lines;
+        return byPage;
     }
 
     /** Returns true if the block is a numbered list and was consumed as such. */
@@ -118,70 +162,62 @@ export class BibliographyResolver implements ReferenceResolver {
     }
 
     /** Split unnumbered refs on hanging-indent boundaries and index by author/year. */
-    private segmentAuthorYear(lines: Line[]): void {
-        if (lines.length === 0) return;
-        // Entry starts sit on a column's flush-left margin; continuations are
-        // hanging-indented ~8-15 units right of it. Multi-column layouts have
-        // one such margin pair per column, and trailing appendix content can
-        // occupy arbitrary x positions, so margins cannot be found by
-        // clustering or by taking minima. Instead: a margin is an x position
-        // shared by MANY lines (flush margins and hanging indents both are),
-        // minus those that lie a hanging-indent's distance right of another
-        // frequent x (those are the continuation indents).
+    private segmentAuthorYear(linesByPage: Line[][]): void {
         const tol = 3;
-        const counts = new Map<number, number>();
-        for (const l of lines) {
-            const r = Math.round(l.x);
-            counts.set(r, (counts.get(r) ?? 0) + 1);
-        }
-        // Flush margins and hanging indents dominate the histogram (hundreds
-        // of lines each); tables/appendix content contributes low-count noise
-        // that must not qualify, or a noise x just left of a real margin
-        // makes the margin itself look like a hanging indent below.
-        const maxCount = Math.max(...counts.values());
-        const threshold = Math.max(3, maxCount * 0.1);
-        const frequent = [...counts.entries()]
-            .filter(([, n]) => n >= threshold)
-            .map(([x]) => x)
-            .sort((a, b) => a - b);
-        let margins = frequent.filter(
-            (x) => !frequent.some((other) => x - other >= 4 && x - other <= 20)
-        );
-        if (margins.length === 0) {
-            // Tiny bibliographies (fixtures, short docs): fall back to the
-            // per-cluster minimum of all x positions.
-            margins = clusterMins(
-                lines.map((l) => Math.round(l.x)),
-                40
-            );
-        }
-
         const blocks: string[] = [];
         let cur: string | null = null;
-        for (const line of lines) {
-            const isStart = margins.some((m) => Math.abs(line.x - m) <= tol);
-            if (isStart || cur === null) {
-                cur = line.text.trim();
-                blocks.push(cur);
-            } else {
-                cur += " " + line.text.trim();
-                blocks[blocks.length - 1] = cur;
+        // Margins are computed PER PAGE: bibliography pages are homogeneous
+        // (flush margins + hanging indents per column), while later appendix
+        // pages have their own layout. A document-global histogram lets a
+        // dense appendix inflate the frequency threshold past a sparse
+        // right-column margin, or park noise just left of a real margin.
+        // Entries wrapping across a page break still work: the continuation
+        // line sits at the next page's hanging indent, which is not a margin
+        // there, so it is appended to the block carried over in `cur`.
+        for (const lines of linesByPage) {
+            if (lines.length === 0) continue;
+            const margins = entryStartMargins(lines);
+            for (const line of lines) {
+                const isStart = margins.some(
+                    (m) => Math.abs(line.x - m) <= tol
+                );
+                if (isStart || cur === null) {
+                    cur = line.text.trim();
+                    blocks.push(cur);
+                } else {
+                    cur += " " + line.text.trim();
+                    blocks[blocks.length - 1] = cur;
+                }
             }
         }
 
-        for (const text of blocks) {
-            const entry = this.parseAuthorYearEntry(text);
-            if (!entry) continue;
+        const entries = blocks
+            .map((text) => this.parseAuthorYearEntry(text))
+            .filter((e): e is AuthorYearEntry => e !== null);
+
+        // Primary keys (first year in the entry) take precedence...
+        for (const entry of entries) {
             for (const surname of entry.surnames) {
                 const key = `${surname}|${entry.year}`;
                 const arr = this.byKey.get(key);
-                if (arr) arr.push(text);
-                else this.byKey.set(key, [text]);
+                if (arr) arr.push(entry.text);
+                else this.byKey.set(key, [entry.text]);
                 if (
                     entry.suffix &&
                     !this.bySuffix.has(`${key}${entry.suffix}`)
                 ) {
-                    this.bySuffix.set(`${key}${entry.suffix}`, text);
+                    this.bySuffix.set(`${key}${entry.suffix}`, entry.text);
+                }
+            }
+        }
+        // ...then secondary years fill only keys nothing else claimed.
+        for (const entry of entries) {
+            for (const year of entry.extraYears) {
+                for (const surname of entry.surnames) {
+                    const key = `${surname}|${year}`;
+                    if (!this.byKey.has(key)) {
+                        this.byKey.set(key, [entry.text]);
+                    }
                 }
             }
         }
@@ -202,6 +238,17 @@ export class BibliographyResolver implements ReferenceResolver {
         if (!ym || ym.index === undefined) return null;
         const year = Number(ym[1]);
         const suffix = ym[2] ?? null;
+        const extraYears = [
+            ...new Set(
+                [
+                    ...text.matchAll(
+                        /(?<![A-Za-z0-9])((?:18|19|20)\d{2})(?![0-9])/g
+                    ),
+                ]
+                    .map((m) => Number(m[1]))
+                    .filter((y) => y !== year)
+            ),
+        ];
 
         const authorRegion = text.slice(0, ym.index);
         const tokens = authorRegion.match(/[A-ZÀ-Þ][A-Za-zÀ-ÿ'’-]+/g) ?? [];
@@ -217,7 +264,7 @@ export class BibliographyResolver implements ReferenceResolver {
             ),
         ];
         if (surnames.length === 0) return null;
-        return { text, surnames, year, suffix };
+        return { text, surnames, year, suffix, extraYears };
     }
 
     resolve(marker: CitationMarker): ResolvedReference | null {
