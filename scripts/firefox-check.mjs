@@ -13,7 +13,7 @@
  */
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { execSync } from "node:child_process";
 import { Builder, By, Key, until } from "selenium-webdriver";
@@ -26,7 +26,10 @@ const grantHostPermissions = process.env.GRANT !== "0";
 // add this harness's localhost host to the allowlist before navigating.
 const EXT_ID = "anchor-reader@datalab.to";
 const EXT_UUID = "a11c0de0-2e2e-4a2a-8b2b-abcdef012345";
-const xpi = "artifacts/anchor_pdf_reader-0.3.0.zip";
+// Derive the archive name from the manifest version so it never drifts on a
+// version bump (matches the naming web-ext build + make-xpi produce).
+const { version } = JSON.parse(readFileSync("src/manifest.json", "utf8"));
+const xpi = `artifacts/anchor_pdf_reader-${version}.zip`;
 if (!existsSync(xpi)) {
     console.log("building package first...");
     execSync("pnpm package", { stdio: "ignore" });
